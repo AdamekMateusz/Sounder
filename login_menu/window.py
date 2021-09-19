@@ -18,15 +18,14 @@ def show_password():
 
 
 def btn_register_clicked():
-
     entry_login.destroy()
     entry_password.destroy()
     but_login.destroy()
+    canvas.delete(canvas_password)
+    canvas.delete(canvas_login)
     but_show_password.destroy()
     print('button destroy')
-    # but_login.place(
-    # x = 489,
-    # y = 330)
+
 
 def show_register(event):
     #password_text = StringVar(window, value='')
@@ -98,7 +97,7 @@ background = canvas.create_image(
 
 
 
-img_register = PhotoImage(file = f"img0.png")
+img_register = PhotoImage(file = f"register_button.png")
 but_register = Button(window,
     image = img_register,
     activebackground = canvas['background'],
@@ -113,10 +112,10 @@ but_register.place(
     width = 260,
     height = 58)
 
-img_password = PhotoImage(file = f"img_textBox0.png")
+img_password_entry = PhotoImage(file = f"img_textBox0.png")
 canvas_password = canvas.create_image(
     621.5, 185.5,
-    image = img_password)
+    image = img_password_entry)
 
 #password_text = StringVar(window, value='Password')
 entry_password = Entry(
@@ -134,10 +133,10 @@ entry_password.place(
     width = 255,
     height = 45)
 
-img_login = PhotoImage(file = f"img_textBox1.png")
+img_login_entry = PhotoImage(file = f"img_textBox1.png")
 canvas_login = canvas.create_image(
     621.5, 115.5,
-    image = img_login)
+    image = img_login_entry)
 
 entry_login = Entry(
     bd = 0,
@@ -150,7 +149,7 @@ entry_login.place(
     width = 255,
     height = 45)
 
-img_login = PhotoImage(file = f"img1.png")
+img_login = PhotoImage(file = f"login_button.png")
 but_login = Button(
     image = img_login,
     borderwidth = 0,
@@ -165,7 +164,7 @@ but_login.place(
 
 img_show_password = PhotoImage(file = f"close_eye_bg.png")
 img_unshow_password = PhotoImage(file = f"open_eye_bg.png")
-but_show_password = Button(
+but_show_password = Button(canvas,
     image = img_show_password,
     borderwidth=0,
     highlightthickness=0,
