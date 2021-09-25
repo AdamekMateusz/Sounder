@@ -99,9 +99,9 @@ entry1 = Entry(
     highlightthickness = 0)
 
 entry1.place(
-    x = 499, y = 195,
-    width = 250,
-    height = 40)
+    x = 497.75, y = 192.5,
+    width = 247.5,
+    height = 43.25)
 
 img1 = PhotoImage(file = f"img1.png")
 b1 = Button(
