@@ -1,5 +1,5 @@
 from tkinter import *
-
+from tkinter import font as tkfont
 
 def btn_clicked():
     print("Button Clicked")
@@ -40,28 +40,38 @@ b0.place(
 """
 
 
-canvas_button= Canvas(
-    window,
-    bg = "#141213",
-    height = 58,
-    width = 260,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge")
-canvas_button.place(x = 489, y =330)
+# canvas_button= Canvas(
+#     window,
+#     bg = "#141213",
+#     height = 58,
+#     width = 260,
+#     bd = 0,
+#     highlightthickness = 0,
+#     relief = "ridge")
+# canvas_button.place(x = 489, y =330)
 
 canvas_button_img = PhotoImage(file = f"Button.png")
 
     
-    
+#141213
+
 b0 = Button(
     image = canvas_button_img,
-    activebackground = canvas_button['background'],
-    bg = canvas_button['background'],
+    activebackground = "#141213",
+    bg = "#141213",
     borderwidth = 0,
     highlightthickness = 0,
     command = btn_clicked,
     relief = "flat")
+
+# b0 = Button(
+#     image = canvas_button_img,
+#     activebackground = canvas_button['background'],
+#     bg = canvas_button['background'],
+#     borderwidth = 0,
+#     highlightthickness = 0,
+#     command = btn_clicked,
+#     relief = "flat")
 
 b0.place(
     x = 489, y = 330,
