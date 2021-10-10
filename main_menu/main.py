@@ -37,12 +37,17 @@ class Entry_Box(Entry):
             width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
             height=self.size_height - 2)
 
+    def Destroy(self):
+        canvas.delete(self.__canvas_background)
+        self.destroy()
     # def Bind(*args):
     #     #print(args)
     #     Entry.bind(args)
     #
     # def get():
     #     return Entry.get()
+
+
 
     def update(self, **kwargs):
         defaultKwargs = {
@@ -86,16 +91,15 @@ def show_password():
 
 
 def btn_register_clicked():
-    entry_login.destroy()
-    entry_password.destroy()
+    entry_login.Destroy()
+    entry_password.Destroy()
     but_login.destroy()
-    #canvas.delete(canvas_password)
-    canvas.delete(canvas_login)
     but_show_password.destroy()
+    but_forgot_password.destroy()
     print('button destroy')
 
 
-def show_register(event):
+def show_register_password(event):
     #password_text = StringVar(window, value='')
     if entry_password.get() == "Password":
         entry_password.config(textvariable=StringVar(window,value=""))
@@ -109,7 +113,7 @@ def show_register(event):
             entry_password.config(show="*")
 
 
-def unshow_register(event):
+def unshow_register_password(event):
     #password_text = StringVar(window, value='Password')
     # if entry_password.get()=="":
     #     entry_password.config(textvariable=password_text)
@@ -125,7 +129,14 @@ def unshow_register(event):
         if password_visibility == False:
             entry_password.config(show="*")
 
+def show_register_login(event):
+    if entry_login.get() == 'Nickname' or entry_login.get() == "":
+        entry_login.config(textvariable=StringVar(window, value=''))
 
+
+def unshow_register_login(event):
+    if entry_login.get() == 'Nickname' or entry_login.get() == "":
+        entry_login.config(textvariable=StringVar(window, value='Nickname'))
 
 window = Tk()
 
@@ -141,16 +152,47 @@ canvas = Canvas(
     relief = "ridge")
 canvas.place(x = 0, y = 0)
 
-background_img = PhotoImage(file = f"other.png")
+background_img = PhotoImage(file = f"background.png")
 background = canvas.create_image(
     400.0, 200.0,
     image=background_img)
 
+entry_password = Entry_Box(494,162,255,45,"entryBox.png",5,"#3c3838")
+entry_password.background_canvas_image()
+entry_password.config(textvariable=StringVar(window, value="Password"))
+entry_password.Place()
+entry_password.bind("<FocusIn>",show_register_password)
+entry_password.bind("<FocusOut>",unshow_register_password)
 
-img_register = PhotoImage(file = f"register_button.png")
+
+entry_login = Entry_Box(494,92,255,45,"entryBox.png",5,"#3c3838")
+#entry_login.set_default_text("Nickname")
+entry_login.config(textvariable=StringVar(window, value="Nickname"))
+entry_login.background_canvas_image()
+entry_login.Place()
+entry_login.bind("<FocusIn>",show_register_login)
+entry_login.bind("<FocusOut>", unshow_register_login)
+
+img_login = PhotoImage(file = f"login_button.png")
+but_login = Button(
+    image = img_login,
+    activebackground="#141213",
+    bg="#141213",
+    borderwidth = 0,
+    highlightthickness = 0,
+    command = btn_clicked,
+    relief = "flat")
+
+but_login.place(
+    x = 489, y = 273,
+    width = 260,
+    height = 51)
+
+img_register = PhotoImage(file = f"buttonBox_register.png")
 but_register = Button(window,
     image = img_register,
-    activebackground = canvas['background'],
+    activebackground = "#141213",
+    bg = "#141213",
     borderwidth = 0,
     highlightthickness = 0,
     command = btn_register_clicked,
@@ -162,80 +204,35 @@ but_register.place(
     width = 260,
     height = 58)
 
-####
-"""
-img_password_entry = PhotoImage(file = f"img_textBox0.png")
-canvas_password = canvas.create_image(
-    621.5, 185.5,
-    image = img_password_entry)
+but_forgot_password = Button(window,text="Forgot Password", font= "Verdana 10 underline", relief='flat', fg = "#3c3838",bg = "#141213",
+    activebackground="#141213",bd=0,highlightbackground="#141213")
 
-#password_text = StringVar(window, value='Password')
-entry_password = Entry(
-    bd = 0,
-    bg = "#3c3838",
-    highlightthickness = 0,
-    textvariable=StringVar(window, value='Password'),
-    )
-entry_password.bind("<FocusIn>",show_register)
-entry_password.bind("<FocusOut>",unshow_register)
-
-
-entry_password.place(
-    x = 494, y = 162,
-    width = 255,
-    height = 45)
-"""
-#####
-
-entry_password = Entry_Box(494,162,255,45,"img_textBox0.png",5,"#3c3838")
-entry_password.background_canvas_image()
-entry_password.Place()
-entry_password.bind("<FocusIn>",show_register)
-entry_password.bind("<FocusOut>",unshow_register)
+#but_forgot = canvas.create_window(569,212, width=106,height=14, anchor='nw', window=but_forgot_password )
+but_forgot_password.place(
+    x=569, y=212,
+    width = 106,
+    height = 16)
 
 
 
-img_login_entry = PhotoImage(file = f"img_textBox1.png")
-canvas_login = canvas.create_image(
-    621.5, 115.5,
-    image = img_login_entry)
-
-entry_login = Entry(
-    bd = 0,
-    bg = "#3c3838",
-    highlightthickness = 0,
-    textvariable='Nickname')
-
-entry_login.place(
-    x = 494, y = 92,
-    width = 255,
-    height = 45)
-
-img_login = PhotoImage(file = f"login_button.png")
-but_login = Button(
-    image = img_login,
-    borderwidth = 0,
-    highlightthickness = 0,
-    command = btn_clicked,
-    relief = "flat")
-
-but_login.place(
-    x = 489, y = 273,
-    width = 260,
-    height = 51)
-
-img_show_password = PhotoImage(file = f"close_eye_bg.png")
-img_unshow_password = PhotoImage(file = f"open_eye_bg.png")
-but_show_password = Button(canvas,
+img_show_password = PhotoImage(file = f"close_eye.png")
+img_unshow_password = PhotoImage(file = f"open_eye.png")
+but_show_password = Button(
     image = img_show_password,
     borderwidth=0,
     highlightthickness=0,
+    bg = "#141213",
+    activebackground="#141213",
     command=show_password,
     relief="flat")
-but_show_password.place(
-    x = 755, y = 169,
-    width = 31,
-    height = 31)
+
+but_show_password_window = canvas.create_window(755,169,anchor='nw', window= but_show_password)
+# but_show_password.place(
+#     x = 755, y = 169,
+#     width = 31,
+#     height = 31)
+
+
 
 window.resizable(False, False)
 window.mainloop()

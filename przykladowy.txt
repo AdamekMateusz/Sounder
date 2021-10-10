@@ -1,0 +1,50 @@
+############################################
+#Button ma tutaj przezroczyste tlo(brak tla), tlo jest konfigurowalne w Tkinterze 
+
+canvas_button_img = PhotoImage(file = f"Button.png")
+
+b0 = Button(
+    image = canvas_button_img,
+    activebackground = "#141213",
+    bg = "#141213",
+    borderwidth = 0,
+    highlightthickness = 0,
+    command = btn_clicked,
+    relief = "flat")
+
+b0.place(
+    x = 489, y = 330,
+    width = 260,
+    height = 58)
+
+
+#Button pzyjmuje kolor tla innnego canvasa
+
+canvas_button_img = PhotoImage(file = f"Button.png")
+
+ b0 = Button(
+     image = canvas_button_img,
+     activebackground = canvas_button['background'],
+     bg = canvas_button['background'],
+     borderwidth = 0,
+     highlightthickness = 0,
+     command = btn_clicked,
+     relief = "flat")
+
+b0.place(
+    x = 489, y = 330,
+    width = 260,
+    height = 58)
+#######################################################
+
+
+b0 = Button(
+    image = canvas_button_img,
+    #activebackground = "#141213",
+    bg = canvas['background'],
+    borderwidth = 0,
+    highlightthickness = 0,
+    command = btn_clicked,
+    relief = "flat")
+
+b0_window = canvas.create_window(489,330,anchor='nw',window=b0)

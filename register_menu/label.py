@@ -1,5 +1,9 @@
 from tkinter import *
 from tkinter import font as tkfont
+from PIL import Image, ImageTk
+
+def clicker(event):
+    print('clicker')
 
 def btn_clicked():
     print("Button Clicked")
@@ -11,7 +15,7 @@ window.geometry("800x400")
 window.configure(bg = "#ffffff")
 canvas = Canvas(
     window,
-    bg = "#ffffff",
+    bg = "green",
     height = 400,
     width = 800,
     bd = 0,
@@ -50,19 +54,45 @@ b0.place(
 #     relief = "ridge")
 # canvas_button.place(x = 489, y =330)
 
-canvas_button_img = PhotoImage(file = f"Button.png")
+def RBGAImage(path):
+    return Image.open(path).convert("RGBA")
+
+canvas_button_img = RBGAImage("Button.png")
+
+CC_canvas_button_img = ImageTk.PhotoImage(canvas_button_img)
 
     
 #141213
 
+bb =Button(text ='slon',borderwidth = 0,
+    highlightthickness = 0,
+    command = btn_clicked,
+    relief = "flat")
+
+bb_window = canvas.create_window(100,100,anchor='nw',window=bb)
+
 b0 = Button(
-    image = canvas_button_img,
-    activebackground = "#141213",
-    bg = "#141213",
+    image = CC_canvas_button_img,
+    # activebackground = "#141213",
+    #bg = "#141213",
+    #bg='systemTransparent',
+    border = 0,
     borderwidth = 0,
     highlightthickness = 0,
     command = btn_clicked,
     relief = "flat")
+
+b0_window = canvas.create_window(489,330,anchor='nw',window=b0)
+
+#Canvas Button
+"""
+reg_button = canvas.create_image(489,330, anchor='nw', image=CC_canvas_button_img, tags="reg_button")
+canvas.tag_bind("reg_button","<Button-1>",clicker)
+"""
+
+
+
+
 
 # b0 = Button(
 #     image = canvas_button_img,
@@ -73,10 +103,10 @@ b0 = Button(
 #     command = btn_clicked,
 #     relief = "flat")
 
-b0.place(
-    x = 489, y = 330,
-    width = 260,
-    height = 58)
+# b0.place(
+#     x = 489, y = 330,
+#     width = 260,
+#     height = 58)
 
 
 entry0_img = PhotoImage(file = f"TextBox.png")
@@ -156,7 +186,7 @@ entry3.place(
     width = 255,
     height = 45)
 
-label1 = Label(window,text="Nicknamessss", font=('Helvetica',12), fg='#3c3838',bg='#151314')
+label1 = Label(window,text="Nicknamessss", font=('Helvetica',12), fg='#3c3838')
 label1.place(x = 494, y = 28)
 """
 canvas.create_text(
