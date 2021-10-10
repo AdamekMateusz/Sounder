@@ -1,6 +1,6 @@
 from tkinter import *
+from tkinter import font
 
-password_visibility = False
 
 class Entry_Box(Entry):
     def __init__(self, x_position, y_position, size_width, size_height, image_path, round_edge, color):
@@ -73,70 +73,284 @@ class Entry_Box(Entry):
         self.background_canvas_image()
         self.Place()
 
+class Register_menu():
+    def __init__(self):
+        self.password_visibility = False
+        self.comunicat_label = canvas.create_text(0, 0, text='')
 
+        self.entry_nickname = Entry_Box(494, 50, 255, 45, "entryBox.png", 5, "#3c3838")
+        self.entry_nickname.background_canvas_image()
+        self.entry_nickname.Place()
 
-def btn_clicked():
-    print("Button Clicked")
+        self.entry_mail = Entry_Box(494, 120, 255, 45, "entryBox.png", 5, "#3c3838")
+        self.entry_mail.background_canvas_image()
+        self.entry_mail.Place()
 
-def show_password():
-    global password_visibility
-    if password_visibility == False:
-        password_visibility = True
-        entry_password.config(show="")
-        but_show_password.config(image=img_unshow_password)
-    else:
-        password_visibility = False
-        entry_password.config(show="*")
-        but_show_password.config(image = img_show_password)
+        self.entry_password = Entry_Box(494, 190, 255, 45, "entryBox.png", 5, "#3c3838")
+        self.entry_password.background_canvas_image()
+        self.entry_password.config(show="*")
+        self.entry_password.Place()
 
+        self.entry_repassword = Entry_Box(494, 260, 255, 45, "entryBox.png", 5, "#3c3838")
+        self.entry_repassword.background_canvas_image()
+        self.entry_repassword.config(show="*")
+        self.entry_repassword.Place()
 
-def btn_register_clicked():
-    entry_login.Destroy()
-    entry_password.Destroy()
-    but_login.destroy()
-    but_show_password.destroy()
-    but_forgot_password.destroy()
-    print('button destroy')
+        self.nickname_label = canvas.create_text(494,33, anchor='nw', text="Nickname", font=font.Font(family='Ubuntu-Regular',
+        size=10, weight='bold', slant='italic'), fill="#3c3838")
 
+        self.mail_label = canvas.create_text(494,103, anchor='nw', text="Mail", font=font.Font(family='Ubuntu-Regular',
+        size=10, weight='bold', slant='italic'), fill="#3c3838")
 
-def show_register_password(event):
-    #password_text = StringVar(window, value='')
-    if entry_password.get() == "Password":
-        entry_password.config(textvariable=StringVar(window,value=""))
-    if password_visibility == False:
-        if entry_password.get() != "Password" or entry_password.get() == "":
-             entry_password.config(show="*")
-        # else:
-        #     password_text = StringVar(window, value='')
-        #     entry_password.config(textvariable=password_text)
+        self.password_label = canvas.create_text(494,173, anchor='nw', text="Password", font=font.Font(family='Ubuntu-Regular',
+        size=10, weight='bold', slant='italic'), fill="#3c3838")
+
+        self.repassword_label = canvas.create_text(494,243, anchor='nw', text="Re-Password", font=font.Font(family='Ubuntu-Regular',
+        size=10, weight='bold', slant='italic'), fill="#3c3838")
+
+        self.img_register = PhotoImage(file=f"buttonBox_register.png")
+        self.but_register = Button(window,
+                              image=self.img_register,
+                              activebackground="#141213",
+                              bg="#141213",
+                              borderwidth=0,
+                              highlightthickness=0,
+                              command=self.registerclick,
+                              relief="flat")
+
+        self.but_register.place(x=489, y=330, width=260, height=58)
+
+        self.but_backTologin = Button(window, text="Back to the login page", font="Verdana 10 underline", relief='flat',
+                                     fg="#3c3838", bg="#141213",
+                                     activebackground="#141213", bd=0, highlightbackground="#141213", command=self.back_to_login_page)
+
+        # but_forgot = canvas.create_window(569,212, width=106,height=14, anchor='nw', window=but_forgot_password )
+        self.but_backTologin.place(
+            x=491, y=384,
+            width=255,
+            height=16)
+
+        self.img_show_password = PhotoImage(file=f"close_eye.png")
+        self.img_unshow_password = PhotoImage(file=f"open_eye.png")
+        self.but_show_password = Button(
+            image=self.img_show_password,
+            borderwidth=0,
+            highlightthickness=0,
+            bg="#141213",
+            activebackground="#141213",
+            command=self.show_password,
+            relief="flat")
+
+        self.but_show_password_window = canvas.create_window(755, 268, anchor='nw', window=self.but_show_password)
+
+    def __del__(self):
+        self.entry_nickname.Destroy()
+        self.entry_mail.Destroy()
+        self.entry_password.Destroy()
+        self.entry_repassword.Destroy()
+        self.but_register.destroy()
+        self.but_backTologin.destroy()
+        canvas.delete(self.nickname_label)
+        canvas.delete(self.mail_label)
+        canvas.delete(self.password_label)
+        canvas.delete(self.repassword_label)
+        self.but_show_password.destroy()
+
+    def registerclick(self):
+        print('register__pressed')
+        canvas.delete(self.comunicat_label)
+        if self.entry_password.get() != self.entry_repassword.get():
+            self.comunicat_label = canvas.create_text(491, 12, text='Passowrd is not the same', fill="#AB3131")
+        if self.entry_nickname == "admin":
+            self.comunicat_label = canvas.create_text(491, 12, text='User is exsist', fill="#AB3131")
+        if self.entry_mail.get() == "admin@mail.com":
+            self.comunicat_label = canvas.create_text(491, 12, text='User is exist', fill="#AB3131")
         else:
-            entry_password.config(show="*")
+            self.comunicat_label = canvas.create_text(491, 12, text='Succesfully registrated', fill="#159C2B")
+
+    def back_to_login_page(self):
+        self.__del__()
+        Login_menu()
+
+    def show_password(self):
+        #global password_visibility
+        if self.password_visibility == False:
+            self.password_visibility = True
+            self.entry_password.config(show="")
+            self.entry_repassword.config(show="")
+            self.but_show_password.config(image=self.img_unshow_password)
+        else:
+            self.password_visibility = False
+            self.entry_password.config(show="*")
+            self.entry_repassword.config(show="*")
+            self.but_show_password.config(image=self.img_show_password)
+
+class Login_menu():
+    def __init__(self):
+        self.password_visibility = False
+        self.comunicat_label = canvas.create_text(0,0,text='')
+
+        self.entry_password = Entry_Box(494, 162, 255, 45, "entryBox.png", 5, "#3c3838")
+        self.entry_password.background_canvas_image()
+        self.entry_password.config(textvariable=StringVar(window, value="Password"))
+        self.entry_password.Place()
+        self.entry_password.bind("<FocusIn>", self.show_register_password)
+        self.entry_password.bind("<FocusOut>", self.unshow_register_password)
+
+        self.entry_login = Entry_Box(494, 92, 255, 45, "entryBox.png", 5, "#3c3838")
+        # entry_login.set_default_text("Nickname")
+        self.entry_login.config(textvariable=StringVar(window, value="Nickname"))
+        self.entry_login.background_canvas_image()
+        self.entry_login.Place()
+        self.entry_login.bind("<FocusIn>", self.show_register_login)
+        self.entry_login.bind("<FocusOut>", self.unshow_register_login)
+
+        self.img_login = PhotoImage(file=f"buttonBox_login.png")
+        self.but_login = Button(
+            image=self.img_login,
+            activebackground="#141213",
+            bg="#141213",
+            borderwidth=0,
+            highlightthickness=0,
+            command=self.btn_login_clicked,
+            relief="flat")
+
+        self.but_login.place(
+            x=489, y=273,
+            width=260,
+            height=51)
+
+        self.img_register = PhotoImage(file=f"buttonBox_register.png")
+        self.but_register = Button(window,
+                              image=self.img_register,
+                              activebackground="#141213",
+                              bg="#141213",
+                              borderwidth=0,
+                              highlightthickness=0,
+                              command=self.btn_register_clicked,
+                              relief="flat")
+
+        self.but_register.place(
+            x=489,
+            y=330,
+            width=260,
+            height=58)
+
+        self.but_forgot_password = Button(window, text="Forgot Password", font="Verdana 10 underline", relief='flat',
+                                     fg="#3c3838", bg="#141213",
+                                     activebackground="#141213", bd=0, highlightbackground="#141213")
+
+        # but_forgot = canvas.create_window(569,212, width=106,height=14, anchor='nw', window=but_forgot_password )
+        self.but_forgot_password.place(
+            x=569, y=212,
+            width=106,
+            height=16)
+
+        self.img_show_password = PhotoImage(file=f"close_eye.png")
+        self.img_unshow_password = PhotoImage(file=f"open_eye.png")
+        self.but_show_password = Button(
+            image=self.img_show_password,
+            borderwidth=0,
+            highlightthickness=0,
+            bg="#141213",
+            activebackground="#141213",
+            command=self.show_password,
+            relief="flat")
+
+        self.but_show_password_window = canvas.create_window(755, 169, anchor='nw', window=self.but_show_password)
+        # but_show_password.place(
+        #     x = 755, y = 169,
+        #     width = 31,
+        #     height = 31)
+
+        self.nickname_label = canvas.create_text(494,75, anchor='nw', text="Nickname", font=font.Font(family='Ubuntu-Regular',
+        size=10, weight='bold', slant='italic'), fill="#3c3838")
+        
+        self.password_label = canvas.create_text(494,145,anchor='nw', text="Password", font=font.Font(family='Ubuntu-Regular',
+        size=10, weight='bold', slant='italic'), fill="#3c3838" )
+
+    def btn_clicked(self):
+        print("Button Clicked")
+
+    def show_password(self):
+        #global password_visibility
+        if self.password_visibility == False:
+            self.password_visibility = True
+            self.entry_password.config(show="")
+            self.but_show_password.config(image=self.img_unshow_password)
+        else:
+            self.password_visibility = False
+            self.entry_password.config(show="*")
+            self.but_show_password.config(image=self.img_show_password)
+
+    def btn_register_clicked(self):
+        self.__del__()
+        Register_menu()
+    # entry_login.Destroy()
+    # entry_password.Destroy()
+    # but_login.destroy()
+    # but_show_password.destroy()
+    # but_forgot_password.destroy()
+    # print('button destroy')
+
+    def btn_login_clicked(self):
+        canvas.delete(self.comunicat_label)
+        if self.entry_login.get() != 'admin':
+            self.comunicat_label = canvas.create_text(491,12,anchor='nw', text="This user not exsist", justify='center', fill="#AB3131")
+
+        if self.entry_login.get() == 'admin' and self.entry_password.get() != 'admin':
+            self.comunicat_label = canvas.create_text(491, 12, anchor='nw', text="Incorrect nickname or password ", fill="#AB3131")
+
+    def show_register_password(self,event):
+        # password_text = StringVar(window, value='')
+        if self.entry_password.get() == "Password":
+            self.entry_password.config(textvariable=StringVar(window, value=""))
+        if self.password_visibility == False:
+            if self.entry_password.get() != "Password" or self.entry_password.get() == "":
+                self.entry_password.config(show="*")
+            # else:
+            #     password_text = StringVar(window, value='')
+            #     entry_password.config(textvariable=password_text)
+            else:
+                self.entry_password.config(show="*")
+
+    def unshow_register_password(self,event):
+        # password_text = StringVar(window, value='Password')
+        # if entry_password.get()=="":
+        #     entry_password.config(textvariable=password_text)
+        print(self.entry_password.get())
+        if self.entry_password.get() == "Password" or self.entry_password.get() == "":
+            # password_text = StringVar(window, value='Password')
+
+            self.entry_password.config(textvariable=StringVar(window, value="Password"))
+            self.entry_password.config(show="")
+            # entry_password.config(show="*")
+            # entry_password.config(textvariable=password_text)
+        else:
+            if self.password_visibility == False:
+                self.entry_password.config(show="*")
+
+    def show_register_login(self,event):
+        if self.entry_login.get() == 'Nickname' or self.entry_login.get() == "":
+            self.entry_login.config(textvariable=StringVar(window, value=''))
+
+    def unshow_register_login(self,event):
+        if self.entry_login.get() == 'Nickname' or self.entry_login.get() == "":
+            self.entry_login.config(textvariable=StringVar(window, value='Nickname'))
+
+    def __del__(self):
+        self.entry_login.Destroy()
+        self.entry_password.Destroy()
+        self.but_login.destroy()
+        self.but_show_password.destroy()
+        self.but_forgot_password.destroy()
+        self.but_register.destroy()
+        canvas.delete(self.password_label)
+        canvas.delete(self.nickname_label)
+        print('button destroy')
 
 
-def unshow_register_password(event):
-    #password_text = StringVar(window, value='Password')
-    # if entry_password.get()=="":
-    #     entry_password.config(textvariable=password_text)
-    print(entry_password.get())
-    if entry_password.get() == "Password" or entry_password.get() == "":
-        #password_text = StringVar(window, value='Password')
 
-        entry_password.config(textvariable=StringVar(window,value="Password"))
-        entry_password.config(show="")
-        #entry_password.config(show="*")
-        #entry_password.config(textvariable=password_text)
-    else:
-        if password_visibility == False:
-            entry_password.config(show="*")
-
-def show_register_login(event):
-    if entry_login.get() == 'Nickname' or entry_login.get() == "":
-        entry_login.config(textvariable=StringVar(window, value=''))
-
-
-def unshow_register_login(event):
-    if entry_login.get() == 'Nickname' or entry_login.get() == "":
-        entry_login.config(textvariable=StringVar(window, value='Nickname'))
 
 window = Tk()
 
@@ -157,82 +371,9 @@ background = canvas.create_image(
     400.0, 200.0,
     image=background_img)
 
-entry_password = Entry_Box(494,162,255,45,"entryBox.png",5,"#3c3838")
-entry_password.background_canvas_image()
-entry_password.config(textvariable=StringVar(window, value="Password"))
-entry_password.Place()
-entry_password.bind("<FocusIn>",show_register_password)
-entry_password.bind("<FocusOut>",unshow_register_password)
-
-
-entry_login = Entry_Box(494,92,255,45,"entryBox.png",5,"#3c3838")
-#entry_login.set_default_text("Nickname")
-entry_login.config(textvariable=StringVar(window, value="Nickname"))
-entry_login.background_canvas_image()
-entry_login.Place()
-entry_login.bind("<FocusIn>",show_register_login)
-entry_login.bind("<FocusOut>", unshow_register_login)
-
-img_login = PhotoImage(file = f"login_button.png")
-but_login = Button(
-    image = img_login,
-    activebackground="#141213",
-    bg="#141213",
-    borderwidth = 0,
-    highlightthickness = 0,
-    command = btn_clicked,
-    relief = "flat")
-
-but_login.place(
-    x = 489, y = 273,
-    width = 260,
-    height = 51)
-
-img_register = PhotoImage(file = f"buttonBox_register.png")
-but_register = Button(window,
-    image = img_register,
-    activebackground = "#141213",
-    bg = "#141213",
-    borderwidth = 0,
-    highlightthickness = 0,
-    command = btn_register_clicked,
-    relief = "flat")
-
-but_register.place(
-    x = 489,
-    y = 330,
-    width = 260,
-    height = 58)
-
-but_forgot_password = Button(window,text="Forgot Password", font= "Verdana 10 underline", relief='flat', fg = "#3c3838",bg = "#141213",
-    activebackground="#141213",bd=0,highlightbackground="#141213")
-
-#but_forgot = canvas.create_window(569,212, width=106,height=14, anchor='nw', window=but_forgot_password )
-but_forgot_password.place(
-    x=569, y=212,
-    width = 106,
-    height = 16)
 
 
 
-img_show_password = PhotoImage(file = f"close_eye.png")
-img_unshow_password = PhotoImage(file = f"open_eye.png")
-but_show_password = Button(
-    image = img_show_password,
-    borderwidth=0,
-    highlightthickness=0,
-    bg = "#141213",
-    activebackground="#141213",
-    command=show_password,
-    relief="flat")
-
-but_show_password_window = canvas.create_window(755,169,anchor='nw', window= but_show_password)
-# but_show_password.place(
-#     x = 755, y = 169,
-#     width = 31,
-#     height = 31)
-
-
-
+Login_menu()
 window.resizable(False, False)
 window.mainloop()
