@@ -19,18 +19,115 @@ def btn_clicked():
     print("Button Clicked")
 
 
-canvas_button_img = PhotoImage(file=f"home_alt_fill.png")
-b0 = Button(
-    image=canvas_button_img,
-    activebackground="black",
+img_allMusic= PhotoImage(file=f"HOME.png")
+btn_allMusic = Button(
+    text="ALL Music"+20*" ",
+    compound='right',
+    image=img_allMusic,
+    activebackground="green",
     bg="black",
+    fg='white',
+    highlightbackground='black',
+    bd=0,
     command=btn_clicked,
     relief="groove")
 
-b0.place(
-    x = 489, y = 330,
-    width = 50,
-    height = 50)
+btn_allMusic.place(
+    x = 0, y = 104,
+    width = 283,
+    height = 47)
+
+img_myMusic= PhotoImage(file=f"SONG.png")
+btn_myMusic = Button(
+    text="MY Music"+20*" ",
+    compound='right',
+    image=img_myMusic,
+    activebackground="green",
+    bg="black",
+    fg='white',
+    highlightbackground='black',
+    bd=0,
+    command=btn_clicked,
+    relief="groove")
+
+btn_myMusic.place(
+    x = 0, y = 151,
+    width = 283,
+    height = 47)
+
+img_shareDown= PhotoImage(file=f"shareDOWN.png")
+btn_shareDown = Button(
+    text="MY Sharing"+18*" ",
+    compound='right',
+    image=img_shareDown,
+    activebackground="green",
+    bg="black",
+    fg='white',
+    highlightbackground='black',
+    bd=0,
+    command=btn_clicked,
+    relief="groove")
+
+btn_shareDown.place(
+    x = 0, y = 198,
+    width = 283,
+    height = 47)
+
+img_shareUP= PhotoImage(file=f"shareUP.png")
+btn_shareUP = Button(
+    text="Sharing ME"+18*" ",
+    compound='right',
+    image=img_shareUP,
+    activebackground="green",
+    bg="black",
+    fg='white',
+    highlightbackground='black',
+    bd=0,
+    command=btn_clicked,
+    relief="groove")
+
+btn_shareUP.place(
+    x = 0, y = 245,
+    width = 283,
+    height = 47)
+
+img_Favourite= PhotoImage(file=f"HEART.png")
+btn_Favourite = Button(
+    text="Favourite"+19*" ",
+    compound='right',
+    image=img_Favourite,
+    activebackground="green",
+    bg="black",
+    fg='white',
+    highlightbackground='black',
+    bd=0,
+    command=btn_clicked,
+    relief="groove")
+
+btn_Favourite.place(
+    x = 0, y = 292,
+    width = 283,
+    height = 47)
+
+img_Upload= PhotoImage(file=f"UPLOAD_small.png")
+btn_Upload = Button(
+    text="Send Music"+18*" ",
+    compound='right',
+    image=img_Upload,
+    activebackground="green",
+    bg="black",
+    fg='white',
+    highlightbackground='black',
+    bd=0,
+    command=btn_clicked,
+    relief="groove")
+
+btn_Upload.place(
+    x = 0, y = 339,
+    width = 283,
+    height = 47)
+
+
 
 image_default_user = PhotoImage(file = f"Rectangle 1.png")
 default_user = Label(leftframe,
