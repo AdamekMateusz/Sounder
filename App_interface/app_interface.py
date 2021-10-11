@@ -127,7 +127,24 @@ btn_Upload.place(
     width = 283,
     height = 47)
 
+distance_label = Label(bg="#3c3838")
+distance_label.place(x=0,y=386,
+                     width=283,height=10)
 
+playlist_label = Label(text='   Playlist', font=font.Font(family='Helvetica',
+        size=10), bg='black',activebackground='black',fg='white', anchor='w')
+playlist_label.place(x=0,y=396, width=200, height=47)
+
+img_add_playlist = PhotoImage(file=f'ADD2.png')
+btn_add_playlist = Button(
+    image=img_add_playlist,
+    activebackground='green',
+    bg='black',
+    command=btn_clicked)
+btn_add_playlist.place(
+    x=230,y=405,
+    width=30,
+    height=30)
 
 image_default_user = PhotoImage(file = f"Rectangle 1.png")
 default_user = Label(leftframe,
