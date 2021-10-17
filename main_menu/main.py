@@ -76,6 +76,115 @@ class Entry_Box(Entry):
         self.background_canvas_image()
         self.Place()
 
+
+class Restore_window():
+    def __init__(self,window):
+        self.window = window
+        self.top = Toplevel(self.window, takefocus=True)
+        # self.window.withdraw()
+        # self.window.deiconify()
+        self.top.geometry("478x302")
+        self.top.title("Restore Password")
+        # self.top.transient(self.window)
+        # self.window.deiconify()
+        # self.window.transient(self.top)
+        self.background_canvas = Canvas(
+            self.top,
+            bg="black",
+            height=302,
+            width=478,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.background_canvas.place(x=0, y=0)
+
+        self.entry_restore_mail = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "Resore_Mail.png",
+                                            5, "#3c3838")
+        self.entry_restore_mail.background_canvas_image()
+        self.entry_restore_mail.Place()
+
+        self.img_cancel = PhotoImage(file=f"Cancel.png")
+        self.but_cancel = Button(self.top,
+                                 image=self.img_cancel,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 command=self.btn_cancel_clicked,
+                                 relief='flat')
+        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+
+        self.img_restore = PhotoImage(file=f"Restore.png")
+        self.but_restore = Button(self.top,
+                                  image=self.img_restore,
+                                  bd=0,
+                                  activebackground="black",
+                                  bg="black",
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  relief='flat',
+                                  command=self.btn_restore_clicked)
+        self.but_restore_window = self.background_canvas.create_window(280, 186, window=self.but_restore,
+                                                                       anchor='nw')
+        # self.but_restore.place
+        # x=280, y=186,
+        # width=76, height=37
+
+        self.restore_password_label = self.background_canvas.create_text(23, 17,
+                                                                         anchor='nw',
+                                                                         text="Restore Password",
+                                                                         font=font.Font(family='Ubuntu-Regular',
+                                                                                        size=28), fill="white")
+
+        self.restore_mail_label = self.background_canvas.create_text(59, 103,
+                                                                     anchor='nw',
+                                                                     text="Mail",
+                                                                     font=font.Font(
+                                                                         family='Ubuntu-Regular',
+                                                                         size=10,
+                                                                         weight='bold',
+                                                                         slant='italic'),
+                                                                     fill="#3c3838")
+
+        self.message_label = self.background_canvas.create_text(111, 73,
+                                                                anchor='nw',
+                                                                text="",
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=10,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+
+    def btn_cancel_clicked(self):
+        self.top.destroy()
+
+    def btn_restore_clicked(self):
+        # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
+        if self.entry_restore_mail.get() == "admin@op.pl":
+            self.background_canvas.delete(self.message_label)
+            self.message_label = self.background_canvas.create_text(111, 73,
+                                                                    anchor='nw',
+                                                                    text="Email was send, check your inbox",
+                                                                    font=font.Font(
+                                                                        family='Ubuntu-Regular',
+                                                                        size=10,
+                                                                        weight='bold',
+                                                                        slant='italic'),
+                                                                    fill="#159C2B")
+        else:
+            self.background_canvas.delete(self.message_label)
+            self.message_label = self.background_canvas.create_text(111, 73,
+                                                                    anchor='nw',
+                                                                    text="Email not exsist",
+                                                                    font=font.Font(
+                                                                        family='Ubuntu-Regular',
+                                                                        size=10,
+                                                                        weight='bold',
+                                                                        slant='italic'),
+                                                                    fill="#AB3131")
+
 class Register_menu():
     def __init__(self,window, canvas):
         self.window = window
@@ -284,110 +393,117 @@ class Login_menu():
     def btn_clicked(self):
         print("Button Clicked")
 
-    def btn_cancel_clicked(self):
-        self.top.destroy()
+    # def btn_cancel_clicked(self):
+    #     self.top.destroy()
+    #
+    # def btn_restore_clicked(self):
+    #     #Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
+    #     if self.entry_restore_mail.get() == "admin@op.pl":
+    #         self.background_canvas.delete(self.message_label)
+    #         self.message_label = self.background_canvas.create_text(111, 73,
+    #                                                       anchor='nw',
+    #                                                       text="Email was send, check your inbox",
+    #                                                       font=font.Font(
+    #                                                           family='Ubuntu-Regular',
+    #                                                           size=10,
+    #                                                           weight='bold',
+    #                                                           slant='italic'),
+    #                                                       fill="#159C2B")
+    #     else:
+    #         self.background_canvas.delete(self.message_label)
+    #         self.message_label = self.background_canvas.create_text(111, 73,
+    #                                                       anchor='nw',
+    #                                                       text="Email not exsist",
+    #                                                       font=font.Font(
+    #                                                           family='Ubuntu-Regular',
+    #                                                           size=10,
+    #                                                           weight='bold',
+    #                                                           slant='italic'),
+    #                                                       fill="#AB3131")
 
-    def btn_restore_clicked(self):
-        #Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
-        if self.entry_restore_mail.get() == "admin@op.pl":
-            self.background_canvas.delete(self.message_label)
-            self.message_label = self.background_canvas.create_text(111, 73,
-                                                          anchor='nw',
-                                                          text="Email was send, check your inbox",
-                                                          font=font.Font(
-                                                              family='Ubuntu-Regular',
-                                                              size=10,
-                                                              weight='bold',
-                                                              slant='italic'),
-                                                          fill="#159C2B")
-        else:
-            self.background_canvas.delete(self.message_label)
-            self.message_label = self.background_canvas.create_text(111, 73,
-                                                          anchor='nw',
-                                                          text="Email not exsist",
-                                                          font=font.Font(
-                                                              family='Ubuntu-Regular',
-                                                              size=10,
-                                                              weight='bold',
-                                                              slant='italic'),
-                                                          fill="#AB3131")
+
+
+
+
+
 
     def btn_forgot_clicked(self):
-        self.top = Toplevel(self.window,takefocus=True)
-        #self.window.withdraw()
-        #self.window.deiconify()
-        self.top.geometry("478x302")
-        self.top.title("Restore Password")
-        #self.top.transient(self.window)
-        #self.window.deiconify()
-        #self.window.transient(self.top)
-        self.background_canvas = Canvas(
-            self.top,
-            bg="black",
-            height=302,
-            width=478,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge")
-        self.background_canvas.place(x=0, y=0)
-
-        self.entry_restore_mail = Entry_Box(self.top,self.background_canvas,61, 122, 355, 47, "Resore_Mail.png", 5, "#3c3838")
-        self.entry_restore_mail.background_canvas_image()
-        self.entry_restore_mail.Place()
-
-        self.img_cancel = PhotoImage(file=f"Cancel.png")
-        self.but_cancel = Button(self.top,
-                            image=self.img_cancel,
-                            bd=0,
-                            borderwidth=0,
-                            highlightthickness=0,
-                            activebackground="black",
-                            bg="black",
-                            command=self.btn_cancel_clicked,
-                            relief='flat')
-        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
-
-        self.img_restore = PhotoImage(file=f"Restore.png")
-        self.but_restore = Button(self.top,
-                                  image=self.img_restore,
-                                  bd=0,
-                                  activebackground="black",
-                                  bg="black",
-                                  borderwidth=0,
-                                  highlightthickness=0,
-                                  relief='flat',
-                                  command=self.btn_restore_clicked)
-        self.but_restore_window = self.background_canvas.create_window(280, 186, window=self.but_restore, anchor='nw')
-        # self.but_restore.place
-        # x=280, y=186,
-        # width=76, height=37
-
-
-        self.restore_password_label = self.background_canvas.create_text(23,17,
-                                                                         anchor='nw',
-                                                                         text="Restore Password",
-                                                                         font=font.Font(family='Ubuntu-Regular',
-                                                                         size=28), fill="white")
-
-        self.restore_mail_label = self.background_canvas.create_text(59, 103,
-                                                          anchor='nw',
-                                                          text="Mail",
-                                                          font=font.Font(
-                                                              family='Ubuntu-Regular',
-                                                              size=10,
-                                                              weight='bold',
-                                                              slant='italic'),
-                                                          fill="#3c3838")
-
-        self.message_label = self.background_canvas.create_text(111, 73,
-                                                          anchor='nw',
-                                                          text="",
-                                                          font=font.Font(
-                                                              family='Ubuntu-Regular',
-                                                              size=10,
-                                                              weight='bold',
-                                                              slant='italic'),
-                                                          fill="white")
+        Restore_window(self.window)
+        # self.top = Toplevel(self.window,takefocus=True)
+        # #self.window.withdraw()
+        # #self.window.deiconify()
+        # self.top.geometry("478x302")
+        # self.top.title("Restore Password")
+        # #self.top.transient(self.window)
+        # #self.window.deiconify()
+        # #self.window.transient(self.top)
+        # self.background_canvas = Canvas(
+        #     self.top,
+        #     bg="black",
+        #     height=302,
+        #     width=478,
+        #     bd=0,
+        #     highlightthickness=0,
+        #     relief="ridge")
+        # self.background_canvas.place(x=0, y=0)
+        #
+        # self.entry_restore_mail = Entry_Box(self.top,self.background_canvas,61, 122, 355, 47, "Resore_Mail.png", 5, "#3c3838")
+        # self.entry_restore_mail.background_canvas_image()
+        # self.entry_restore_mail.Place()
+        #
+        # self.img_cancel = PhotoImage(file=f"Cancel.png")
+        # self.but_cancel = Button(self.top,
+        #                     image=self.img_cancel,
+        #                     bd=0,
+        #                     borderwidth=0,
+        #                     highlightthickness=0,
+        #                     activebackground="black",
+        #                     bg="black",
+        #                     command=self.btn_cancel_clicked,
+        #                     relief='flat')
+        # self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+        #
+        # self.img_restore = PhotoImage(file=f"Restore.png")
+        # self.but_restore = Button(self.top,
+        #                           image=self.img_restore,
+        #                           bd=0,
+        #                           activebackground="black",
+        #                           bg="black",
+        #                           borderwidth=0,
+        #                           highlightthickness=0,
+        #                           relief='flat',
+        #                           command=self.btn_restore_clicked)
+        # self.but_restore_window = self.background_canvas.create_window(280, 186, window=self.but_restore, anchor='nw')
+        # # self.but_restore.place
+        # # x=280, y=186,
+        # # width=76, height=37
+        #
+        #
+        # self.restore_password_label = self.background_canvas.create_text(23,17,
+        #                                                                  anchor='nw',
+        #                                                                  text="Restore Password",
+        #                                                                  font=font.Font(family='Ubuntu-Regular',
+        #                                                                  size=28), fill="white")
+        #
+        # self.restore_mail_label = self.background_canvas.create_text(59, 103,
+        #                                                   anchor='nw',
+        #                                                   text="Mail",
+        #                                                   font=font.Font(
+        #                                                       family='Ubuntu-Regular',
+        #                                                       size=10,
+        #                                                       weight='bold',
+        #                                                       slant='italic'),
+        #                                                   fill="#3c3838")
+        #
+        # self.message_label = self.background_canvas.create_text(111, 73,
+        #                                                   anchor='nw',
+        #                                                   text="",
+        #                                                   font=font.Font(
+        #                                                       family='Ubuntu-Regular',
+        #                                                       size=10,
+        #                                                       weight='bold',
+        #                                                       slant='italic'),
+        #                                                   fill="white")
 
 
     def show_password(self):
