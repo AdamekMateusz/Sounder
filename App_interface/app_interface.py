@@ -80,129 +80,13 @@ class Entry_Box(Entry):
 
 
 
-# def btn_clicked():
-#     print("Button Clicked")
-class Add_playlist_window():
-    def __init__(self,window):
-        self.window = window
-        self.top = Toplevel(self.window, takefocus=True)
-        # self.window.withdraw()
-        # self.window.deiconify()
-        self.top.geometry("478x302")
-        self.top.title("Add playlist")
-        # self.top.transient(self.window)
-        # self.window.deiconify()
-        # self.window.transient(self.top)
-        self.background_canvas = Canvas(
-            self.top,
-            bg="black",
-            height=302,
-            width=478,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge")
-        self.background_canvas.place(x=0, y=0)
 
-        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "Resore_Mail.png",
-                                            5, "#3c3838")
-        self.entry_add_playlist.background_canvas_image()
-        self.entry_add_playlist.Place()
+# class Add_playlist_window():
+#     def __init__(self,window):
 
-        self.img_cancel = PhotoImage(file=f"cancel_playlist.png")
-        self.but_cancel = Button(self.top,
-                                 image=self.img_cancel,
-                                 bd=0,
-                                 borderwidth=0,
-                                 highlightthickness=0,
-                                 activebackground="black",
-                                 bg="black",
-                                 command=self.btn_cancel_clicked,
-                                 relief='flat')
-        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
 
-        self.img_add = PhotoImage(file=f"ADD_playlist.png")
-        self.but_add = Button(self.top,
-                                  image=self.img_add,
-                                  bd=0,
-                                  activebackground="black",
-                                  bg="black",
-                                  borderwidth=0,
-                                  highlightthickness=0,
-                                  relief='flat',
-                                  command=self.btn_add_clicked)
-        self.but_add_window = self.background_canvas.create_window(280, 186, window=self.but_add,
-                                                                       anchor='nw')
-        # self.but_restore.place
-        # x=280, y=186,
-        # width=76, height=37
 
-        self.add_playlist_label = self.background_canvas.create_text(23, 17,
-                                                                         anchor='nw',
-                                                                         text="Add playlist",
-                                                                         font=font.Font(family='Ubuntu-Regular',
-                                                                                        size=28), fill="white")
 
-        self.playlist_name_label = self.background_canvas.create_text(59, 103,
-                                                                     anchor='nw',
-                                                                     text="Playlist Name",
-                                                                     font=font.Font(
-                                                                         family='Ubuntu-Regular',
-                                                                         size=10,
-                                                                         weight='bold',
-                                                                         slant='italic'),
-                                                                     fill="#3c3838")
-
-        self.message_label = self.background_canvas.create_text(111, 73,
-                                                                anchor='nw',
-                                                                text="",
-                                                                font=font.Font(
-                                                                    family='Ubuntu-Regular',
-                                                                    size=10,
-                                                                    weight='bold',
-                                                                    slant='italic'),
-                                                                fill="white")
-
-    def btn_cancel_clicked(self):
-        self.top.destroy()
-
-    def btn_add_clicked(self):
-        global playlist
-        # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
-        if self.entry_add_playlist.get() in playlist:
-            self.background_canvas.delete(self.message_label)
-            self.message_label = self.background_canvas.create_text(111, 73,
-                                                                    anchor='nw',
-                                                                    text="Playlist exsist",
-                                                                    font=font.Font(
-                                                                        family='Ubuntu-Regular',
-                                                                        size=10,
-                                                                        weight='bold',
-                                                                        slant='italic'),
-                                                                    fill="#AB3131")
-        else:
-            self.background_canvas.delete(self.message_label)
-            playlist.append(self.entry_add_playlist.get())
-            temp = str(self.entry_add_playlist.get())
-            self.temp = Button(self.window,
-                text=self.entry_add_playlist.get(),
-                activebackground="green",
-                bg="black",
-                fg='white',
-                highlightbackground='black',
-                bd=0,
-                command = self.btn_press,
-                relief="groove").place(x=0,y=left.last_postion+47,width=283,height=47)
-
-            left.last_postion = left.last_postion +47
-            self.__del__()
-            #.place(x=0,y=443,width=283,height=47)
-
-    def btn_press(self):
-        print("Button name: ",)
-
-    def __del__(self):
-        self.top.destroy()
-        self.background_canvas.destroy()
 
 class Left_menu():
     def __init__(self,frame,canvas):
@@ -353,11 +237,127 @@ class Left_menu():
                                  highlightthickness=0, anchor="w")
         self.button_nickname.place(x=79,y=46,width=150,height=25)
 
-    def btn_add_playlist_clicked(self):
-        Add_playlist_window(window)
-
     def btn_clicked(self):
         print("Button Clicked")
+
+    def btn_add_playlist_clicked(self):
+        self.top = Toplevel(self.window, takefocus=True)
+        # self.window.withdraw()
+        # self.window.deiconify()
+        self.top.geometry("478x302")
+        self.top.title("Add playlist")
+        # self.top.transient(self.window)
+        # self.window.deiconify()
+        # self.window.transient(self.top)
+        self.background_canvas = Canvas(
+            self.top,
+            bg="black",
+            height=302,
+            width=478,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.background_canvas.place(x=0, y=0)
+
+        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "Resore_Mail.png",
+                                            5, "#3c3838")
+        self.entry_add_playlist.background_canvas_image()
+        self.entry_add_playlist.Place()
+
+        self.img_cancel = PhotoImage(file=f"cancel_playlist.png")
+        self.but_cancel = Button(self.top,
+                                 image=self.img_cancel,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 command=self.btn_cancel_clicked,
+                                 relief='flat')
+        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+
+        self.img_add = PhotoImage(file=f"ADD_playlist.png")
+        self.but_add = Button(self.top,
+                              image=self.img_add,
+                              bd=0,
+                              activebackground="black",
+                              bg="black",
+                              borderwidth=0,
+                              highlightthickness=0,
+                              relief='flat',
+                              command=self.btn_add_clicked)
+        self.but_add_window = self.background_canvas.create_window(280, 186, window=self.but_add,
+                                                                   anchor='nw')
+        # self.but_restore.place
+        # x=280, y=186,
+        # width=76, height=37
+
+        self.add_playlist_label = self.background_canvas.create_text(23, 17,
+                                                                     anchor='nw',
+                                                                     text="Add playlist",
+                                                                     font=font.Font(family='Ubuntu-Regular',
+                                                                                    size=28), fill="white")
+
+        self.playlist_name_label = self.background_canvas.create_text(59, 103,
+                                                                      anchor='nw',
+                                                                      text="Playlist Name",
+                                                                      font=font.Font(
+                                                                          family='Ubuntu-Regular',
+                                                                          size=10,
+                                                                          weight='bold',
+                                                                          slant='italic'),
+                                                                      fill="#3c3838")
+
+        self.message_label = self.background_canvas.create_text(111, 73,
+                                                                anchor='nw',
+                                                                text="",
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=10,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+
+
+    def btn_cancel_clicked(self):
+        self.top.destroy()
+
+    def btn_add_clicked(self):
+        global playlist
+        # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
+        if self.entry_add_playlist.get() in playlist:
+            self.background_canvas.delete(self.message_label)
+            self.message_label = self.background_canvas.create_text(111, 73,
+                                                                    anchor='nw',
+                                                                    text="Playlist exsist",
+                                                                    font=font.Font(
+                                                                        family='Ubuntu-Regular',
+                                                                        size=10,
+                                                                        weight='bold',
+                                                                        slant='italic'),
+                                                                    fill="#AB3131")
+        else:
+            self.background_canvas.delete(self.message_label)
+            playlist.append(self.entry_add_playlist.get())
+            temp = str(self.entry_add_playlist.get())
+            self.temp = Button(self.window,
+                               text=self.entry_add_playlist.get(),
+                               activebackground="green",
+                               bg="black",
+                               fg='white',
+                               highlightbackground='black',
+                               bd=0,
+                               command=self.btn_press,
+                               relief="groove").place(x=0, y=left.last_postion + 47, width=283, height=47)
+
+            left.last_postion = left.last_postion + 47
+            self.top.destroy()
+            self.background_canvas.destroy()
+            # .place(x=0,y=443,width=283,height=47)
+
+    def btn_press(self):
+        print("Button name: ")
+
 
 
 class Play_menu():
