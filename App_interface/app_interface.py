@@ -1,7 +1,12 @@
 from tkinter import *
 import tkinter.font as font
+import os
+from functools import partial
+from playsound import playsound
+from threading import Thread
 
 playlist = []
+#button_identities = []
 
 class Entry_Box(Entry):
     def __init__(self, window_place,canvas,x_position, y_position, size_width, size_height, image_path, round_edge, color):
@@ -92,7 +97,8 @@ class Left_menu():
     def __init__(self,frame,canvas):
         self.window = frame
         self.canvas = canvas
-
+        self.playlist_path = "/home/mateusz/dwhelper"
+        self.button_identities = []
 
         self.img_allMusic= PhotoImage(file=f"HOME.png")
         self.btn_allMusic = Button(
@@ -234,8 +240,14 @@ class Left_menu():
                                  highlightcolor='black',activeforeground='white',
                                  activebackground='black',
                                  bd=0,
+                                 command = self.btn_nickname_clicked,
                                  highlightthickness=0, anchor="w")
         self.button_nickname.place(x=79,y=46,width=150,height=25)
+
+    def btn_nickname_clicked(self):
+        print('btn nickname clicked')
+        # content.__del__()
+        # Setting_menu(contentframe, contentframe_canvas)
 
     def btn_clicked(self):
         print("Button Clicked")
@@ -322,8 +334,18 @@ class Left_menu():
     def btn_cancel_clicked(self):
         self.top.destroy()
 
+    def create_playlist(self,dir_name):
+
+        path = os.path.join(self.playlist_path,dir_name)
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+
+
     def btn_add_clicked(self):
         global playlist
+        #global button_identities
         # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
         if self.entry_add_playlist.get() in playlist:
             self.background_canvas.delete(self.message_label)
@@ -339,24 +361,41 @@ class Left_menu():
         else:
             self.background_canvas.delete(self.message_label)
             playlist.append(self.entry_add_playlist.get())
-            temp = str(self.entry_add_playlist.get())
-            self.temp = Button(self.window,
+            temp_label = str(self.entry_add_playlist.get())
+            self.temp_button = Button(self.window,
                                text=self.entry_add_playlist.get(),
                                activebackground="green",
                                bg="black",
                                fg='white',
                                highlightbackground='black',
                                bd=0,
-                               command=self.btn_press,
-                               relief="groove").place(x=0, y=left.last_postion + 47, width=283, height=47)
+                               command=partial(self.btn_playlist_press,len(self.button_identities)),
+                               relief="groove")
+            self.temp_button.place(x=0, y=left.last_postion + 47, width=283, height=47)
+            print(type(self.temp_button))
+            self.button_identities.append(self.temp_button)
 
             left.last_postion = left.last_postion + 47
             self.top.destroy()
             self.background_canvas.destroy()
             # .place(x=0,y=443,width=283,height=47)
 
-    def btn_press(self):
-        print("Button name: ")
+            self.create_playlist(temp_label)
+
+    def btn_playlist_press(self,n):
+        #global button_identities
+        self.bname = self.button_identities[n]
+        print(type(self.bname))
+        # print('Button', n)
+        playlist_name = self.bname['text']
+        music_path = os.path.join(self.playlist_path, playlist_name)
+        if os.path.exists(music_path):
+            list_file = os.listdir(music_path)
+            list_file = [extension for extension in list_file if extension.endswith(".mp3")]
+
+            for music in list_file:
+                print(f"{music}")
+
 
 
 
@@ -386,6 +425,126 @@ class Play_menu():
     #                          activeforeground='white',
     #                          activebackground='black',
     #                          highlightthickness=0, bg='black')
+
+
+
+class Content_menu():
+    def __init__(self,frame,canvas):
+        self.window = frame
+        self.canvas = canvas
+
+        self.button_list = []
+        self.entry_search = Entry_Box(self.window, self.canvas, 141, 31, 758, 30, "Wyszukiwarka.png",
+                                            90, "#C4C4C4")
+        self.entry_search.background_canvas_image()
+        self.entry_search.Place()
+        self.entry_search.bind("<Return>", self.entry_search_focus)
+
+        self.img_setting = PhotoImage(file=f"setting_icon.png")
+        self.but_setting = Button(self.window,
+                                 image=self.img_setting,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground=self.canvas['bg'],
+                                 bg=self.canvas['bg'],
+                                 command=self.btn_setting_clicked,
+                                 relief='flat')
+        self.but_setting_window = self.canvas.create_window(1085, 15, window=self.but_setting, anchor='nw')
+
+        self.img_track_pause = PhotoImage(file=f"pause_label.png")
+        self.img_track_play= PhotoImage(file=f"play_label.png")
+        self.btn_track_play = Button(self.window,
+            text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
+            compound='left',
+            image=self.img_track_play,
+            activebackground="green",
+            bg=self.canvas['bg'],
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_track_clicked,
+            anchor = "w",
+            relief="groove")
+
+        self.btn_track_play.place(
+            x = 0, y = 75,
+            width = 1158,
+            height = 38)
+
+
+    def __del__(self):
+        self.entry_search.Destroy()
+        self.canvas.delete(self.but_setting_window)
+        self.btn_track_play.destroy()
+        Setting_menu(self.window, self.canvas)
+
+    def entry_search_focus(self,event):
+        print('pressed Enter')
+
+    def btn_setting_clicked(self):
+        self.__del__()
+
+    def btn_track_clicked(self):
+        print("label track clicked")
+        print(self.btn_track_play['image'])
+        if self.btn_track_play['image'] == "pyimage13":
+            self.btn_track_play.config(image=self.img_track_pause)
+            playsound(os.path.join("/home/mateusz/dwhelper/ROCK",str(self.btn_track_play['text'])))
+        else:
+            self.btn_track_play.config(image=self.img_track_play)
+
+
+class Setting_menu():
+    def __init__(self,frame,canvas):
+        self.window = frame
+        self.canvas = canvas
+
+
+        self.setting_label = self.canvas.create_text(71, 8,
+                                  anchor='nw',
+                                  text="Settings",
+                                  font=font.Font(
+                                      family='Ubuntu-Regular',
+                                      size=64,
+                                      weight='bold',
+                                      slant='italic'),
+                                  fill="white")
+
+        self.change_avatar_label = self.canvas.create_text(109, 121,
+                                  anchor='nw',
+                                  text="Change Avatar",
+                                  font=font.Font(
+                                      family='Ubuntu-Regular',
+                                      size=24,
+                                      weight='bold',
+                                      slant='italic'),
+                                  fill="white")
+
+        self.img_back = PhotoImage(file=f"back_white_img.png")
+        self.but_back = Button(self.window,
+                                  image=self.img_back,
+                                  bd=0,
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  activebackground=self.canvas['bg'],
+                                  bg=self.canvas['bg'],
+                                  command=self.btn_back_clicked,
+                                  relief='flat')
+        self.but_setting_window = self.canvas.create_window(0, 30, window=self.but_back, anchor='nw')
+
+    def __del__(self):
+        self.canvas.delete(self.but_setting_window)
+        self.canvas.delete(self.setting_label)
+        self.canvas.delete(self.change_avatar_label)
+
+
+
+
+    def btn_back_clicked(self):
+        self.__del__()
+        Content_menu(self.window, self.canvas)
+
 
 
 
@@ -427,6 +586,31 @@ playframe_canvas = Canvas(
 playframe_canvas.place(x = 0, y = 913)
 
 Play_menu(playframe, playframe_canvas)
+
+
+
+contentframe = Frame(window,bg='#0F0F0E', relief='flat')
+contentframe.place(
+    x=283,
+    y=0,
+    width=1157,
+    height=912)
+
+contentframe_canvas = Canvas(
+    contentframe,
+    bg = "#0F0F0E",
+    height = 912,
+    width = 1157,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge")
+contentframe_canvas.place(x = 0, y = 0)
+
+content = Content_menu(contentframe, contentframe_canvas)
+
+#setting = Setting_menu(contentframe, contentframe_canvas)
+
+
 
 linelabel = Label(window, bg='#3c3838',relief='flat')
 linelabel.place(x=0,y=910,width=1440, height=3)
