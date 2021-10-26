@@ -2,8 +2,10 @@ from tkinter import *
 import tkinter.font as font
 import os
 from functools import partial
-from playsound import playsound
-from threading import Thread
+#from playsound import playsound
+#from threading import Thread
+from tkinter import ttk
+#from tkinter.ttk import *
 
 playlist = []
 #button_identities = []
@@ -40,11 +42,17 @@ class Entry_Box(Entry):
             image=self.__entry_image)
 
     def Place(self):
-        self.place(
-            x=self.x_position + self.__distance_radius_calculator() + 2,
-            y=self.y_position + 2,
-            width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
-            height=self.size_height - 2)
+        self.canvas.create_window(self.x_position + self.__distance_radius_calculator() + 2,
+                                  self.y_position + 2,
+                                  anchor='nw',
+                                  width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
+                                  height=self.size_height - 2,
+                                  window=self)
+        # self.place(
+        #     x=self.x_position + self.__distance_radius_calculator() + 2,
+        #     y=self.y_position + 2,
+        #     width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
+        #     height=self.size_height - 2)
 
     def Destroy(self):
         self.canvas.delete(self.__canvas_background)
@@ -490,7 +498,7 @@ class Content_menu():
         print(self.btn_track_play['image'])
         if self.btn_track_play['image'] == "pyimage13":
             self.btn_track_play.config(image=self.img_track_pause)
-            playsound(os.path.join("/home/mateusz/dwhelper/ROCK",str(self.btn_track_play['text'])))
+            #playsound(os.path.join("/home/mateusz/dwhelper/ROCK",str(self.btn_track_play['text'])))
         else:
             self.btn_track_play.config(image=self.img_track_play)
 
@@ -500,26 +508,98 @@ class Setting_menu():
         self.window = frame
         self.canvas = canvas
 
+        style = ttk.Style(self.window)
+        style.theme_use("alt")
+        # create new scrollbar layout
+        style.element_create("arrowless.Vertical.TScrollbar", "from", "alt")
+        style.layout('arrowless.Vertical.TScrollbar',
+                     [('Vertical.Scrollbar.trough',
+                       {'children': [('Vertical.Scrollbar.thumb',
+                                      {'expand': '1', 'sticky': 'nswe'})],
+                        'sticky': 'ns'})])
 
-        self.setting_label = self.canvas.create_text(71, 8,
+        self.canvas.config(scrollregion=(0,0,int(self.canvas['height']),int(self.canvas['width'])+200))
+
+        style.configure('arrowless.Vertical.TScrollbar',troughcolor='#0F0F0E',borderwidth=0,bordercolor="#0F0F0E",background='#3C3838')
+        self.vertibar = ttk.Scrollbar(self.window,
+                                      orient = 'vertical',
+                                      style = 'arrowless.Vertical.TScrollbar')
+        #Other sposob Create
+        # self.vertibar = Scrollbar(
+        #     frame,
+        #     bd=0,
+        #     #highlightbackground = 'yellow',
+        #     #highlightcolor="red",
+        #     #highlightthickness=0,
+        #     troughcolor=self.canvas['bg'],
+        #     bg="#3C3838",
+        #     #style='arrowless.Vertical.TScrollbar',
+        #     activebackground="green",
+        #     orient=VERTICAL
+        # )
+
+        self.vertibar.pack(side=RIGHT, fill=Y)
+        self.vertibar.config(command=self.canvas.yview)
+
+        self.canvas.config(
+            yscrollcommand=self.vertibar.set
+        )
+        self.canvas.pack(expand=True, side=LEFT, fill=BOTH)
+
+
+    #8
+        self.setting_label = self.canvas.create_text(71, 30,
                                   anchor='nw',
                                   text="Settings",
                                   font=font.Font(
-                                      family='Ubuntu-Regular',
-                                      size=64,
+                                      family='c',
+                                      size=48,
                                       weight='bold',
                                       slant='italic'),
                                   fill="white")
 
-        self.change_avatar_label = self.canvas.create_text(109, 121,
+        self.your_profile_label = self.canvas.create_text(90, 128,
                                   anchor='nw',
-                                  text="Change Avatar",
+                                  text="Your Profile",
                                   font=font.Font(
                                       family='Ubuntu-Regular',
-                                      size=24,
+                                      size=36,
                                       weight='bold',
                                       slant='italic'),
                                   fill="white")
+
+        self.img_proffile =PhotoImage(file=f"setting_account_image.png")
+        self.but_profile = Button(self.window,
+                                  image=self.img_proffile,
+                                  bd=0,
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  activebackground=self.canvas['bg'],
+                                  bg=self.canvas['bg'],
+                                  command=self.btn_clicked,
+                                  relief='flat')
+        self.but_proffile_window = self.canvas.create_window(145, 193, window=self.but_profile, anchor='nw')
+
+        self.but_change_avatar = Button(self.window,
+                                 text="Change",
+                                 font=('Ubuntu-Regular', 9, 'underline'),
+                                 # font=font.Font(amily='Ubuntu-Regular',
+                                 #                size=18,
+                                 #                weight='normal',
+                                 #                slant='roman',
+                                 #                underline=1),
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 foreground = "#3c3838",
+                                 activebackground=self.canvas['bg'],
+                                 bg=self.canvas['bg'],
+                                 command=self.btn_clicked,
+                                 relief='flat')
+        self.but_save_window = self.canvas.create_window(163, 291, window=self.but_change_avatar, anchor='nw')
+
+
+
 
         self.img_back = PhotoImage(file=f"back_white_img.png")
         self.but_back = Button(self.window,
@@ -533,13 +613,138 @@ class Setting_menu():
                                   relief='flat')
         self.but_setting_window = self.canvas.create_window(0, 30, window=self.but_back, anchor='nw')
 
+        self.your_nickname_label = self.canvas.create_text(275, 212,
+                                                          anchor='nw',
+                                                          text="tojama4",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=24,
+                                                              weight='normal',
+                                                              slant='italic'),
+                                                          fill="white")
+
+        self.your_mail_label = self.canvas.create_text(275, 260,
+                                                          anchor='nw',
+                                                          text="mateusz20.08.1999@gmail.com",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=24,
+                                                              weight='normal',
+                                                              slant='italic'),
+                                                          fill="white")
+
+        self.your_describe_label = self.canvas.create_text(145, 409,
+                                                          anchor='nw',
+                                                          text="Describe",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=24,
+                                                              weight='bold',
+                                                              slant='italic'),
+                                                          fill="white")
+
+
+        self.img_edit = PhotoImage(file=f"edit_setting.png")
+        self.but_edit = Button(self.window,
+                                 image=self.img_edit,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground=self.canvas['bg'],
+                                 bg=self.canvas['bg'],
+                                 command=self.btn_clicked,
+                                 relief='flat')
+        self.but_edit_window = self.canvas.create_window(785, 647, window=self.but_edit, anchor='nw')
+
+        self.img_save = PhotoImage(file=f"save_setting.png")
+        self.but_save = Button(self.window,
+                                 image=self.img_save,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground=self.canvas['bg'],
+                                 bg=self.canvas['bg'],
+                                 command=self.btn_clicked,
+                                 relief='flat')
+        self.but_save_window = self.canvas.create_window(890, 647, window=self.but_save, anchor='nw')
+
+        self.your_change_password_label = self.canvas.create_text(145, 754,
+                                                          anchor='nw',
+                                                          text="Change Password",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=24,
+                                                              weight='bold',
+                                                              slant='italic'),
+                                                          fill="white")
+
+        self.your_change_password_label = self.canvas.create_text(145, 819,
+                                                          anchor='nw',
+                                                          text="Old Password",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=18,
+                                                              weight='normal',
+                                                              slant='roman'),
+                                                          fill="#3C3838")
+
+        self.entry_add_playlist = Entry_Box(self.window, self.canvas, 145, 845, 445, 59, "entryBox_setting.png",
+                                            5, "#3C3838")
+        self.entry_add_playlist.background_canvas_image()
+        self.entry_add_playlist.Place()
+
+        self.your_change_password_label = self.canvas.create_text(145, 925,
+                                                          anchor='nw',
+                                                          text="New Password",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=18,
+                                                              weight='normal',
+                                                              slant='roman'),
+                                                          fill="#3C3838")
+
+        self.entry_add_playlist = Entry_Box(self.window, self.canvas, 145, 951, 445, 59, "entryBox_setting.png",
+                                            5, "#3C3838")
+        self.entry_add_playlist.background_canvas_image()
+        self.entry_add_playlist.Place()
+
+        self.your_change_password_label = self.canvas.create_text(145, 1032,
+                                                          anchor='nw',
+                                                          text="Re-type Password",
+                                                          font=font.Font(
+                                                              family='Ubuntu-Regular',
+                                                              size=18,
+                                                              weight='normal',
+                                                              slant='roman'),
+                                                          fill="#3C3838")
+
+        self.entry_add_playlist = Entry_Box(self.window, self.canvas, 145, 1058, 445, 59, "entryBox_setting.png",
+                                            5, "#3C3838")
+        self.entry_add_playlist.background_canvas_image()
+        self.entry_add_playlist.Place()
+
+        self.img_change = PhotoImage(file=f"change_setting.png")
+        self.but_change = Button(self.window,
+                                 image=self.img_change,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground=self.canvas['bg'],
+                                 bg=self.canvas['bg'],
+                                 command=self.btn_clicked,
+                                 relief='flat')
+        self.but_change_window = self.canvas.create_window(514, 1164, window=self.but_change, anchor='nw')
+
+
     def __del__(self):
         self.canvas.delete(self.but_setting_window)
         self.canvas.delete(self.setting_label)
-        self.canvas.delete(self.change_avatar_label)
+        #self.canvas.delete(self.change_avatar_label)
+        self.vertibar.destroy()
 
 
-
+    def btn_clicked(self):
+        print('btn clicked')
 
     def btn_back_clicked(self):
         self.__del__()
