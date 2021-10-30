@@ -3,9 +3,13 @@ import tkinter.font as font
 import os
 from functools import partial
 #from playsound import playsound
-#from threading import Thread
 from tkinter import ttk
 #from tkinter.ttk import *
+from tkinter import filedialog as fd
+from tkinter.messagebox import showinfo
+
+from threading import Thread
+import time
 
 playlist = []
 #button_identities = []
@@ -355,7 +359,19 @@ class Left_menu():
         global playlist
         #global button_identities
         # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
-        if self.entry_add_playlist.get() in playlist:
+        if self.entry_add_playlist.get() == " " or self.entry_add_playlist.get() == "":
+            self.background_canvas.delete(self.message_label)
+            self.message_label = self.background_canvas.create_text(111, 73,
+                                                                    anchor='nw',
+                                                                    text="You cannot create an unnamed playlist",
+                                                                    font=font.Font(
+                                                                        family='Ubuntu-Regular',
+                                                                        size=10,
+                                                                        weight='bold',
+                                                                        slant='italic'),
+                                                                    fill="#AB3131")
+
+        elif self.entry_add_playlist.get() in playlist:
             self.background_canvas.delete(self.message_label)
             self.message_label = self.background_canvas.create_text(111, 73,
                                                                     anchor='nw',
@@ -366,6 +382,7 @@ class Left_menu():
                                                                         weight='bold',
                                                                         slant='italic'),
                                                                     fill="#AB3131")
+
         else:
             self.background_canvas.delete(self.message_label)
             playlist.append(self.entry_add_playlist.get())
@@ -508,6 +525,9 @@ class Setting_menu():
         self.window = frame
         self.canvas = canvas
 
+        self.canvas.config(scrollregion=(0, 0, int(self.canvas['height']), int(self.canvas['width']) + 200))
+
+        """
         style = ttk.Style(self.window)
         style.theme_use("alt")
         # create new scrollbar layout
@@ -517,26 +537,30 @@ class Setting_menu():
                        {'children': [('Vertical.Scrollbar.thumb',
                                       {'expand': '1', 'sticky': 'nswe'})],
                         'sticky': 'ns'})])
-
-        self.canvas.config(scrollregion=(0,0,int(self.canvas['height']),int(self.canvas['width'])+200))
-
+        
         style.configure('arrowless.Vertical.TScrollbar',troughcolor='#0F0F0E',borderwidth=0,bordercolor="#0F0F0E",background='#3C3838')
         self.vertibar = ttk.Scrollbar(self.window,
                                       orient = 'vertical',
                                       style = 'arrowless.Vertical.TScrollbar')
+        """
+
+
+
+
+
         #Other sposob Create
-        # self.vertibar = Scrollbar(
-        #     frame,
-        #     bd=0,
-        #     #highlightbackground = 'yellow',
-        #     #highlightcolor="red",
-        #     #highlightthickness=0,
-        #     troughcolor=self.canvas['bg'],
-        #     bg="#3C3838",
-        #     #style='arrowless.Vertical.TScrollbar',
-        #     activebackground="green",
-        #     orient=VERTICAL
-        # )
+        self.vertibar = Scrollbar(
+            self.window,
+            bd=0,
+            #highlightbackground = 'yellow',
+            #highlightcolor="red",
+            #highlightthickness=0,
+            troughcolor=self.canvas['bg'],
+            bg="#3C3838",
+            #style='arrowless.Vertical.TScrollbar',
+            activebackground="green",
+            orient='vertical'
+        )
 
         self.vertibar.pack(side=RIGHT, fill=Y)
         self.vertibar.config(command=self.canvas.yview)
@@ -544,7 +568,7 @@ class Setting_menu():
         self.canvas.config(
             yscrollcommand=self.vertibar.set
         )
-        self.canvas.pack(expand=True, side=LEFT, fill=BOTH)
+        #self.canvas.pack(expand=True, side=LEFT, fill=BOTH)
 
 
     #8
@@ -576,7 +600,7 @@ class Setting_menu():
                                   highlightthickness=0,
                                   activebackground=self.canvas['bg'],
                                   bg=self.canvas['bg'],
-                                  command=self.btn_clicked,
+                                  command=self.select_file,
                                   relief='flat')
         self.but_proffile_window = self.canvas.create_window(145, 193, window=self.but_profile, anchor='nw')
 
@@ -594,7 +618,7 @@ class Setting_menu():
                                  foreground = "#3c3838",
                                  activebackground=self.canvas['bg'],
                                  bg=self.canvas['bg'],
-                                 command=self.btn_clicked,
+                                 command=self.select_file,
                                  relief='flat')
         self.but_save_window = self.canvas.create_window(163, 291, window=self.but_change_avatar, anchor='nw')
 
@@ -642,6 +666,24 @@ class Setting_menu():
                                                               weight='bold',
                                                               slant='italic'),
                                                           fill="white")
+        self.img_describe = PhotoImage(file=f"describe_rectangle.png")
+        self.describe_image = self.canvas.create_image(145,456,image=self.img_describe,anchor='nw')
+
+        self.text_describeBox = Text(self.window,
+                                     bg='#C4C4C4',
+                                     bd=0,
+                                     fg='black',
+                                     highlightbackground = "#C4C4C4",
+                                     highlightcolor="#C4C4C4",
+                                     relief="flat",
+                                     state=DISABLED,
+                                     font=font.Font(
+                                         family='Ubuntu-Regular',
+                                         size=10,
+                                         weight='normal',
+                                         slant='roman'))
+
+        self.text_describeBox_window = self.canvas.create_window(153,458,anchor='nw',width=808,height=165,window=self.text_describeBox)
 
 
         self.img_edit = PhotoImage(file=f"edit_setting.png")
@@ -652,7 +694,7 @@ class Setting_menu():
                                  highlightthickness=0,
                                  activebackground=self.canvas['bg'],
                                  bg=self.canvas['bg'],
-                                 command=self.btn_clicked,
+                                 command=self.btn_edit_clicked,
                                  relief='flat')
         self.but_edit_window = self.canvas.create_window(785, 647, window=self.but_edit, anchor='nw')
 
@@ -664,7 +706,7 @@ class Setting_menu():
                                  highlightthickness=0,
                                  activebackground=self.canvas['bg'],
                                  bg=self.canvas['bg'],
-                                 command=self.btn_clicked,
+                                 command=self.btn_save_clicked,
                                  relief='flat')
         self.but_save_window = self.canvas.create_window(890, 647, window=self.but_save, anchor='nw')
 
@@ -688,10 +730,10 @@ class Setting_menu():
                                                               slant='roman'),
                                                           fill="#3C3838")
 
-        self.entry_add_playlist = Entry_Box(self.window, self.canvas, 145, 845, 445, 59, "entryBox_setting.png",
+        self.entry_new_password = Entry_Box(self.window, self.canvas, 145, 845, 445, 59, "entryBox_setting.png",
                                             5, "#3C3838")
-        self.entry_add_playlist.background_canvas_image()
-        self.entry_add_playlist.Place()
+        self.entry_new_password.background_canvas_image()
+        self.entry_new_password.Place()
 
         self.your_change_password_label = self.canvas.create_text(145, 925,
                                                           anchor='nw',
@@ -703,10 +745,10 @@ class Setting_menu():
                                                               slant='roman'),
                                                           fill="#3C3838")
 
-        self.entry_add_playlist = Entry_Box(self.window, self.canvas, 145, 951, 445, 59, "entryBox_setting.png",
+        self.entry_old_password = Entry_Box(self.window, self.canvas, 145, 951, 445, 59, "entryBox_setting.png",
                                             5, "#3C3838")
-        self.entry_add_playlist.background_canvas_image()
-        self.entry_add_playlist.Place()
+        self.entry_old_password.background_canvas_image()
+        self.entry_old_password.Place()
 
         self.your_change_password_label = self.canvas.create_text(145, 1032,
                                                           anchor='nw',
@@ -718,10 +760,10 @@ class Setting_menu():
                                                               slant='roman'),
                                                           fill="#3C3838")
 
-        self.entry_add_playlist = Entry_Box(self.window, self.canvas, 145, 1058, 445, 59, "entryBox_setting.png",
+        self.entry_retype_password = Entry_Box(self.window, self.canvas, 145, 1058, 445, 59, "entryBox_setting.png",
                                             5, "#3C3838")
-        self.entry_add_playlist.background_canvas_image()
-        self.entry_add_playlist.Place()
+        self.entry_retype_password.background_canvas_image()
+        self.entry_retype_password.Place()
 
         self.img_change = PhotoImage(file=f"change_setting.png")
         self.but_change = Button(self.window,
@@ -735,20 +777,101 @@ class Setting_menu():
                                  relief='flat')
         self.but_change_window = self.canvas.create_window(514, 1164, window=self.but_change, anchor='nw')
 
+        #self.myThread = Thread(target = self.get_numer_character)
+        # if self.text_describeBox.focus_get():
+        #     print('traktor')
+        # else:
+        #     print('musztarda')
+        #https://www.geeksforgeeks.org/python-focus_set-and-focus_get-method/
+        #sprawdz plik tkinter_thread.py
+
 
     def __del__(self):
-        self.canvas.delete(self.but_setting_window)
-        self.canvas.delete(self.setting_label)
+        #self.canvas.delete(self.but_setting_window)
+        #self.canvas.delete(self.setting_label)
         #self.canvas.delete(self.change_avatar_label)
         self.vertibar.destroy()
+        #self.canvas.delete(self.but_save_window)
+        #self.canvas.delete(self.but_edit_window)
+        #self.canvas.delete(self.but_change_window)
+        self.entry_new_password.Destroy()
+        self.entry_old_password.Destroy()
+        self.entry_retype_password.Destroy()
+        self.canvas.delete("all")
+        #self.canvas.configure(yscrollcommand=-1)
+
+
 
 
     def btn_clicked(self):
         print('btn clicked')
+#Trzeba jakos sprawdzac to ze obietk nie koze miec wiecejniz 900 znakow, monza async libka sprobowac
+    # async def get_numer_character(self):
+    #     self.state = self.text_describeBox['state']
+    #     self.state = str(self.state)
+    #     self.state = self.state.lower()
+    #     print(self.state)
+    #     print(type(self.state))
+    #     if self.state == 'normal':
+    #         print('slon')
+    #     else:
+    #         print('pietruszka')
+    #
+    #     await asyncio.sleep(1)
+
+    #zeby trad dzialal prawdopodobnei trzbe awalanc z glowej petlia nie z tej kalsy iodolwac siedo danej metody
+    # setting = Setting_menu(window, canvas)
+    #myTread = Thread(target = self.setting.get_count)
+    #myTread.start()
+
+    def get_count(self):
+        self.state = self.text_describeBox['state']
+        self.state = str(self.state)
+        self.state = self.state.lower()
+        print(self.state)
+        print(type(self.state))
+        if self.state == 'normal':
+            print('slon')
+        else:
+            print('pietruszka')
+
+        time.sleep(1)
+
+    def btn_edit_clicked(self):
+        self.text_describeBox.config(state=NORMAL)
+        #self.text_describeBox.focus_set()
+        #self.get_numer_character
+        #self.myThread.start()
+
+
+    def btn_save_clicked(self):
+        self.text_describeBox.config(state=DISABLED)
+        A = self.text_describeBox.get("1.0", END)
+        print(A.index)
+        print(A)
+        print(len(A))
 
     def btn_back_clicked(self):
         self.__del__()
         Content_menu(self.window, self.canvas)
+
+    def select_file(self):
+        filetypes = (
+            ('PNG', '*.png'),
+        )
+
+        filename = fd.askopenfilename(
+            title='Open a file',
+            initialdir='/',
+            filetypes=filetypes)
+
+        showinfo(
+            title='Selected File',
+            message=filename)
+
+
+
+
 
 
 
@@ -815,10 +938,14 @@ content = Content_menu(contentframe, contentframe_canvas)
 
 #setting = Setting_menu(contentframe, contentframe_canvas)
 
-
-
-linelabel = Label(window, bg='#3c3838',relief='flat')
-linelabel.place(x=0,y=910,width=1440, height=3)
+def test_target():
+    secondsSinceEpoch = time.time()
+    timeObj = time.localtime(secondsSinceEpoch)
+    print('Current TimeStamp is : %d:%d:%d' % (timeObj.tm_hour, timeObj.tm_min, timeObj.tm_sec))
+    time.sleep(2)
 
 
 window.mainloop()
+
+mytread = Thread(target=test_target)
+mytread.start()
