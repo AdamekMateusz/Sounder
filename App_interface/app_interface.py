@@ -3,16 +3,13 @@ import tkinter.font as font
 import os
 from functools import partial
 #from playsound import playsound
-from tkinter import ttk
+#from tkinter import ttk
 #from tkinter.ttk import *
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
 
-from threading import Thread
 import time
 
-playlist = []
-#button_identities = []
 
 class Entry_Box(Entry):
     def __init__(self, window_place,canvas,x_position, y_position, size_width, size_height, image_path, round_edge, color):
@@ -241,13 +238,13 @@ class Left_menu():
             height=30)
 
         self.image_default_user = PhotoImage(file = f"Rectangle 1.png")
-        self.default_user = Label(leftframe,
+        self.default_user = Label(self.window,
             image = self.image_default_user,bg='black')
         self.default_user.place(x=21,y=21,width=50,height=50)
 
         #to jest do poprawienia nie tak definiujemy czcionke,
         self.font_nickname = font.Font(family='Helvetica',size=18, underline=1)
-        self.button_nickname = Button(leftframe,text='tojama4',font=self.font_nickname,
+        self.button_nickname = Button(self.window,text='tojama4',font=self.font_nickname,
                                  fg='white',bg='black',relief='flat',
                                  highlightcolor='black',activeforeground='white',
                                  activebackground='black',
@@ -356,7 +353,6 @@ class Left_menu():
 
 
     def btn_add_clicked(self):
-        global playlist
         #global button_identities
         # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
         if self.entry_add_playlist.get() == " " or self.entry_add_playlist.get() == "":
@@ -371,7 +367,7 @@ class Left_menu():
                                                                         slant='italic'),
                                                                     fill="#AB3131")
 
-        elif self.entry_add_playlist.get() in playlist:
+        elif self.entry_add_playlist.get() in app.playlist:
             self.background_canvas.delete(self.message_label)
             self.message_label = self.background_canvas.create_text(111, 73,
                                                                     anchor='nw',
@@ -385,7 +381,7 @@ class Left_menu():
 
         else:
             self.background_canvas.delete(self.message_label)
-            playlist.append(self.entry_add_playlist.get())
+            app.playlist.append(self.entry_add_playlist.get())
             temp_label = str(self.entry_add_playlist.get())
             self.temp_button = Button(self.window,
                                text=self.entry_add_playlist.get(),
@@ -396,11 +392,11 @@ class Left_menu():
                                bd=0,
                                command=partial(self.btn_playlist_press,len(self.button_identities)),
                                relief="groove")
-            self.temp_button.place(x=0, y=left.last_postion + 47, width=283, height=47)
+            self.temp_button.place(x=0, y=app.left.last_postion + 47, width=283, height=47)
             print(type(self.temp_button))
             self.button_identities.append(self.temp_button)
 
-            left.last_postion = left.last_postion + 47
+            app.left.last_postion = app.left.last_postion + 47
             self.top.destroy()
             self.background_canvas.destroy()
             # .place(x=0,y=443,width=283,height=47)
@@ -426,8 +422,10 @@ class Left_menu():
 
 class Play_menu():
     def __init__(self,frame, canvas):
+        self.window = frame
+        self.canvas = canvas
         self.play_img = PhotoImage(file='Button(1).png')
-        self.play_button = Button(playframe, image=self.play_img, bd=0, command=self.play,highlightcolor='black',activeforeground='white',
+        self.play_button = Button(self.window, image=self.play_img, bd=0, command=self.play,highlightcolor='black',activeforeground='white',
                                  activebackground='black',
                                  highlightthickness=0)
         pause_button =Button()
@@ -872,7 +870,67 @@ class Setting_menu():
 
 
 
+class App_Interface():
+    def __init__(self,window):
+        self.window = window
 
+        self.playlist = []
+        # button_identities = []
+
+        self.leftframe = Frame(self.window, bg='black', relief='flat')
+        self.leftframe.place(
+            x=0,
+            y=0,
+            width=283,
+            height=910)
+
+        self.leftframe_canvas = Canvas(
+            self.leftframe,
+            bg="black",
+            height=283,
+            width=910,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.leftframe_canvas.place(x=0, y=0)
+
+        self.left = Left_menu(self.leftframe, self.leftframe_canvas)
+
+        self.playframe = Frame(self.window, bg='black', relief='flat')
+        self.playframe.place(x=0, y=913, width=1440, height=112)
+
+        self.playframe_canvas = Canvas(
+            self.playframe,
+            bg="black",
+            height=112,
+            width=1440,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.playframe_canvas.place(x=0, y=913)
+
+        self.play_menu = Play_menu(self.playframe, self.playframe_canvas)
+
+        self.contentframe = Frame(self.window, bg='#0F0F0E', relief='flat')
+        self.contentframe.place(
+            x=283,
+            y=0,
+            width=1157,
+            height=912)
+
+        self.contentframe_canvas = Canvas(
+            self.contentframe,
+            bg="#0F0F0E",
+            height=912,
+            width=1157,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.contentframe_canvas.place(x=0, y=0)
+
+        self.content = Content_menu(self.contentframe, self.contentframe_canvas)
+
+        # setting = Setting_menu(contentframe, contentframe_canvas)
 
 
 
@@ -881,71 +939,21 @@ window.geometry("1440x1024")
 window.configure(bg="#ffffff")
 window.resizable(False, False)
 
-leftframe = Frame(window,bg='black', relief='flat')
-leftframe.place(
-    x=0,
-    y=0,
-    width=283,
-    height=910)
+app = App_Interface(window)
 
-leftframe_canvas = Canvas(
-    leftframe,
-    bg = "black",
-    height = 283,
-    width = 910,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge")
-leftframe_canvas.place(x = 0, y = 0)
 
-left = Left_menu(leftframe, leftframe_canvas)
-
-playframe = Frame(window,bg='black',relief='flat')
-playframe.place(x=0,y=913, width=1440,height=112)
-
-playframe_canvas = Canvas(
-    playframe,
-    bg = "black",
-    height = 112,
-    width = 1440,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge")
-playframe_canvas.place(x = 0, y = 913)
-
-Play_menu(playframe, playframe_canvas)
+window.mainloop()
 
 
 
-contentframe = Frame(window,bg='#0F0F0E', relief='flat')
-contentframe.place(
-    x=283,
-    y=0,
-    width=1157,
-    height=912)
 
-contentframe_canvas = Canvas(
-    contentframe,
-    bg = "#0F0F0E",
-    height = 912,
-    width = 1157,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge")
-contentframe_canvas.place(x = 0, y = 0)
-
-content = Content_menu(contentframe, contentframe_canvas)
-
-#setting = Setting_menu(contentframe, contentframe_canvas)
-
+"""
 def test_target():
     secondsSinceEpoch = time.time()
     timeObj = time.localtime(secondsSinceEpoch)
     print('Current TimeStamp is : %d:%d:%d' % (timeObj.tm_hour, timeObj.tm_min, timeObj.tm_sec))
     time.sleep(2)
 
-
-window.mainloop()
-
 mytread = Thread(target=test_target)
 mytread.start()
+"""
