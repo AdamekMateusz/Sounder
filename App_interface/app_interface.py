@@ -49,12 +49,12 @@ class Entry_Box(Entry):
                                   width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
                                   height=self.size_height - 2,
                                   window=self)
-    def place_warun(self):
-        self.place(
-            x=self.x_position + self.__distance_radius_calculator() + 2,
-            y=self.y_position + 2,
-            width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
-            height=self.size_height - 2)
+    # def place_warun(self):
+    #     self.place(
+    #         x=self.x_position + self.__distance_radius_calculator() + 2,
+    #         y=self.y_position + 2,
+    #         width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
+    #         height=self.size_height - 2)
 
     def Destroy(self):
         self.canvas.delete(self.__canvas_background)
@@ -525,47 +525,16 @@ class Play_menu():
     #                          activebackground='black',
     #                          highlightthickness=0, bg='black')
 
-
-
-class Content_menu():
-    def __init__(self,frame,canvas):
+class Content_search():
+    def __init__(self,frame, canvas):
         self.window = frame
         self.canvas = canvas
-        self.button_list = []
-
-        # jest to pozycja po wyszukiwarce i po menu
-        self.last_record_position = 75
-
-
-        self.canvas.config(
-            scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + 200))
-        self.vertibar = Scrollbar(
-            self.window,
-            bd=0,
-            #highlightbackground = 'yellow',
-            #highlightcolor="red",
-            #highlightthickness=0,
-            troughcolor=self.canvas['bg'],
-            bg="#3C3838",
-            #style='arrowless.Vertical.TScrollbar',
-            activebackground="green",
-            orient='vertical'
-        )
-
-        self.vertibar.pack(side=RIGHT, fill=Y)
-        self.vertibar.config(command=self.canvas.yview)
-
-        self.canvas.config(
-            yscrollcommand=self.vertibar.set
-        )
-
 
         self.entry_search = Entry_Box(self.window, self.canvas, 141, 31, 758, 30, "Wyszukiwarka.png",
                                             90, "#C4C4C4")
         self.entry_search.background_canvas_image()
         self.entry_search.Place()
         self.entry_search.bind("<Return>", self.entry_search_focus)
-        self.entry_search.place_warun()
 
         self.img_setting = PhotoImage(file=f"setting_icon.png")
         self.but_setting = Button(self.window,
@@ -578,7 +547,54 @@ class Content_menu():
                                  command=self.btn_setting_clicked,
                                  relief='flat')
         #self.but_setting_window = self.canvas.create_window(1080, 15, window=self.but_setting, anchor='nw')
-        self.but_setting.place(x=1080,y=15)
+        self.but_setting_window = self.canvas.create_window(1080,15,anchor='nw', window=self.but_setting)
+
+    def __del__(self):
+        #self.canvas.delete("all")
+        #self.entry_search.Destroy()
+        #pass
+        pass
+
+
+
+
+    def entry_search_focus(self,event):
+        print('pressed Enter')
+
+    def btn_setting_clicked(self):
+        #app.content.__del__()
+        #self.__del__()
+        #app.content.content_search.__del__()
+        #app.content.content_play.__del__()
+        app.content.__del__()
+        app.setting = Setting_menu(app.contentframe, app.contentframe_canvas)
+
+class Content_play():
+    def __init__(self,frame,canvas):
+        self.window = frame
+        self.canvas = canvas
+
+        self.last_record_position = 75
+        self.button_list = []
+
+        self.canvas.config(
+            scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + 200))
+        self.vertibar = Scrollbar(
+            self.window,
+            bd=0,
+            troughcolor=self.canvas['bg'],
+            bg="#3C3838",
+            activebackground="green",
+            orient='vertical'
+        )
+
+        self.vertibar.pack(side=RIGHT, fill=Y)
+        #self.vertibar.place(x=1157-16,y=75)
+        #self.vertibar.grid(row=0, column=0, sticky='ns')
+        self.vertibar.config(command=self.canvas.yview)
+        self.canvas.config(
+            yscrollcommand=self.vertibar.set
+        )
 
         self.img_track_pause = PhotoImage(file=f"pause_label.png")
         self.img_track_play= PhotoImage(file=f"play_label.png")
@@ -595,25 +611,8 @@ class Content_menu():
             anchor = "w",
             relief="groove")
 
-        #
-        self.btn_track_play_window = self.canvas.create_window(0, 75, window=self.btn_track_play, anchor='nw',width=1158-int(self.vertibar['width']), height=38)
-        # self.btn_track_play.place(
-        #     x = 0, y = 75,
-        #     width = 1158,
-        #     height = 38)
+        self.btn_track_play_window = self.canvas.create_window(0, 0, window=self.btn_track_play, anchor='nw',width=1157-int(self.vertibar['width']), height=38)
 
-
-    def __del__(self):
-        self.entry_search.Destroy()
-        #self.canvas.delete(self.but_setting_window)
-        self.btn_track_play.destroy()
-        Setting_menu(self.window, self.canvas)
-
-    def entry_search_focus(self,event):
-        print('pressed Enter')
-
-    def btn_setting_clicked(self):
-        self.__del__()
 
     def btn_track_clicked(self):
         print("label track clicked")
@@ -624,13 +623,69 @@ class Content_menu():
         else:
             self.btn_track_play.config(image=self.img_track_play)
 
+    def  __del__(self):
+        self.vertibar.destroy()
+
+
+class Content_menu():
+    def __init__(self,frame,canvas):
+        self.window = frame
+        self.canvas = canvas
+
+        self.content_search_frame = Frame(self.window, bg='black', relief='flat')
+        self.content_search_frame.place(
+            x=0,
+            y=0,
+            width=1157,
+            height=75)
+
+        self.content_search_canvas = Canvas(
+            self.content_search_frame,
+            bg="#0F0F0E",
+            width=1157,
+            height=75,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.content_search_canvas.place(x=0, y=0)
+
+        self.content_play_frame = Frame(self.window, bg='black', relief='flat')
+        self.content_play_frame.place(
+            x=0,
+            y=75,
+            width=1157,
+            height=910-75)
+
+        self.content_play_canvas = Canvas(
+            self.content_play_frame,
+            bg="#0F0F0E",
+            width=1157,
+            height=910-75,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.content_play_canvas.place(x=0, y=0)
+
+        self.content_search = Content_search(self.content_search_frame,self.content_search_canvas)
+        self.content_play = Content_play(self.content_play_frame,self.content_play_canvas)
+
+    def __del__(self):
+        #self.content_play.__del__()
+        #self.content_search.__del__()
+        self.content_search_canvas.destroy()
+        self.content_play_canvas.destroy()
+        self.content_search_frame.destroy()
+        self.content_play_frame.destroy()
+
+
+
 
 class Setting_menu():
     def __init__(self,frame,canvas):
         self.window = frame
         self.canvas = canvas
 
-        self.canvas.config(scrollregion=(0, 0, int(self.canvas['height']), int(self.canvas['width']) + 200))
+        self.canvas.config(scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + 200))
 
         """
         style = ttk.Style(self.window)
@@ -673,15 +728,17 @@ class Setting_menu():
 
 
     #8
-        self.setting_label = self.canvas.create_text(71, 30,
-                                  anchor='nw',
+        self.setting_label = self.canvas.create_text(71, 21,
                                   text="Settings",
                                   font=font.Font(
                                       family='c',
                                       size=48,
                                       weight='bold',
                                       slant='italic'),
+                                  anchor='nw',
                                   fill="white")
+        # self.setting_label_window = self.canvas.create_window(71, 30,
+        #                           anchor='nw',window = self.setting_label)
 
         self.your_profile_label = self.canvas.create_text(90, 128,
                                   anchor='nw',
@@ -888,16 +945,10 @@ class Setting_menu():
 
 
     def __del__(self):
-        #self.canvas.delete(self.but_setting_window)
-        #self.canvas.delete(self.setting_label)
-        #self.canvas.delete(self.change_avatar_label)
         self.vertibar.destroy()
-        #self.canvas.delete(self.but_save_window)
-        #self.canvas.delete(self.but_edit_window)
-        #self.canvas.delete(self.but_change_window)
-        self.entry_new_password.Destroy()
-        self.entry_old_password.Destroy()
-        self.entry_retype_password.Destroy()
+        #self.entry_new_password.Destroy()
+        #self.entry_old_password.Destroy()
+        #self.entry_retype_password.Destroy()
         self.canvas.delete("all")
         #self.canvas.configure(yscrollcommand=-1)
 
@@ -954,7 +1005,7 @@ class Setting_menu():
 
     def btn_back_clicked(self):
         self.__del__()
-        Content_menu(self.window, self.canvas)
+        app.content = Content_menu(self.window,self.canvas)
 
     def select_file(self):
         filetypes = (
@@ -1030,6 +1081,7 @@ class App_Interface():
             highlightthickness=0,
             relief="ridge")
         self.contentframe_canvas.place(x=0, y=0)
+
 
         self.content = Content_menu(self.contentframe, self.contentframe_canvas)
 
