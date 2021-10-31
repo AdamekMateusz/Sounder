@@ -49,11 +49,12 @@ class Entry_Box(Entry):
                                   width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
                                   height=self.size_height - 2,
                                   window=self)
-        # self.place(
-        #     x=self.x_position + self.__distance_radius_calculator() + 2,
-        #     y=self.y_position + 2,
-        #     width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
-        #     height=self.size_height - 2)
+    def place_warun(self):
+        self.place(
+            x=self.x_position + self.__distance_radius_calculator() + 2,
+            y=self.y_position + 2,
+            width=self.size_width - (self.__distance_radius_calculator() * 2) - (2) * 2,
+            height=self.size_height - 2)
 
     def Destroy(self):
         self.canvas.delete(self.__canvas_background)
@@ -98,134 +99,44 @@ class Entry_Box(Entry):
 # class Add_playlist_window():
 #     def __init__(self,window):
 
-
-
-
-
-class Left_menu():
-    def __init__(self,frame,canvas):
+class Playlist_Menu():
+    def __init__(self,frame, canvas):
         self.window = frame
         self.canvas = canvas
+
+        self.last_postion = 0
         self.playlist_path = "/home/mateusz/dwhelper"
         self.button_identities = []
+        self.canvas.config(
+        scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])))
+        #scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])+self.last_postion-9*47)
+        #self.canvas.config(scrollregion=(0, 0, int(self.canvas['height']), int(self.canvas['width']) + 200))
 
-        self.img_allMusic= PhotoImage(file=f"HOME.png")
-        self.btn_allMusic = Button(
-            text="ALL Music"+20*" ",
-            compound='right',
-            image=self.img_allMusic,
-            activebackground="green",
-            bg="black",
-            fg='white',
-            highlightbackground='black',
+        self.vertibar = Scrollbar(
+            self.window,
             bd=0,
-            command=self.btn_clicked,
-            relief="groove")
-
-        self.btn_allMusic.place(
-            x = 0, y = 104,
-            width = 283,
-            height = 47)
-
-        self.img_myMusic= PhotoImage(file=f"SONG.png")
-        self.btn_myMusic = Button(
-            text="MY Music"+20*" ",
-            compound='right',
-            image=self.img_myMusic,
+            #highlightbackground = 'yellow',
+            #highlightcolor="red",
+            #highlightthickness=0,
+            troughcolor=self.canvas['bg'],
+            bg="#3C3838",
+            #style='arrowless.Vertical.TScrollbar',
             activebackground="green",
-            bg="black",
-            fg='white',
-            highlightbackground='black',
-            bd=0,
-            command=self.btn_clicked,
-            relief="groove")
+            orient='vertical'
+        )
 
-        self.btn_myMusic.place(
-            x = 0, y = 151,
-            width = 283,
-            height = 47)
+        self.vertibar.pack(side=RIGHT, fill=Y)
+        self.vertibar.config(command=self.canvas.yview)
 
-        self.img_shareDown= PhotoImage(file=f"shareDOWN.png")
-        self.btn_shareDown = Button(
-            text="MY Sharing"+18*" ",
-            compound='right',
-            image=self.img_shareDown,
-            activebackground="green",
-            bg="black",
-            fg='white',
-            highlightbackground='black',
-            bd=0,
-            command=self.btn_clicked,
-            relief="groove")
-
-        self.btn_shareDown.place(
-            x = 0, y = 198,
-            width = 283,
-            height = 47)
-
-        self.img_shareUP= PhotoImage(file=f"shareUP.png")
-        self.btn_shareUP = Button(
-            text="Sharing ME"+18*" ",
-            compound='right',
-            image=self.img_shareUP,
-            activebackground="green",
-            bg="black",
-            fg='white',
-            highlightbackground='black',
-            bd=0,
-            command=self.btn_clicked,
-            relief="groove")
-
-        self.btn_shareUP.place(
-            x = 0, y = 245,
-            width = 283,
-            height = 47)
-
-        self.img_Favourite= PhotoImage(file=f"HEART.png")
-        self.btn_Favourite = Button(
-            text="Favourite"+19*" ",
-            compound='right',
-            image=self.img_Favourite,
-            activebackground="green",
-            bg="black",
-            fg='white',
-            highlightbackground='black',
-            bd=0,
-            command=self.btn_clicked,
-            relief="groove")
-
-        self.btn_Favourite.place(
-            x = 0, y = 292,
-            width = 283,
-            height = 47)
-
-        self.img_Upload= PhotoImage(file=f"UPLOAD_small.png")
-        self.btn_Upload = Button(
-            text="Send Music"+18*" ",
-            compound='right',
-            image=self.img_Upload,
-            activebackground="green",
-            bg="black",
-            fg='white',
-            highlightbackground='black',
-            bd=0,
-            command=self.btn_clicked,
-            relief="groove")
-
-        self.btn_Upload.place(
-            x = 0, y = 339,
-            width = 283,
-            height = 47)
-
-        self.distance_label = Label(bg="#3c3838")
-        self.distance_label.place(x=0,y=386,
-                             width=283,height=10)
+        self.canvas.config(
+            yscrollcommand=self.vertibar.set
+        )
 
         self.playlist_label = Label(text='   Playlist', font=font.Font(family='Helvetica',
                 size=10), bg='black',activebackground='black',fg='white', anchor='w')
-        self.playlist_label.place(x=0,y=396, width=200, height=47)
+        self.playlist_label.place(x=0,y=396, width=283 - int(self.vertibar['width']), height=47)
+        self.last_postion = self.last_postion + 47
 
-        self.last_postion = 396
         self.img_add_playlist = PhotoImage(file=f'ADD2.png')
         self.btn_add_playlist = Button(
             image=self.img_add_playlist,
@@ -237,29 +148,19 @@ class Left_menu():
             width=30,
             height=30)
 
-        self.image_default_user = PhotoImage(file = f"Rectangle 1.png")
-        self.default_user = Label(self.window,
-            image = self.image_default_user,bg='black')
-        self.default_user.place(x=21,y=21,width=50,height=50)
+        # self.btn1= Button(self.window,text ='btn1')
+        # self.canvas.create_window(0,60,anchor='nw',window=self.btn1)
+        #
+        # self.btn2= Button(self.window,text ='btn2')
+        # self.canvas.create_window(0,600,anchor='nw',window=self.btn2)
 
-        #to jest do poprawienia nie tak definiujemy czcionke,
-        self.font_nickname = font.Font(family='Helvetica',size=18, underline=1)
-        self.button_nickname = Button(self.window,text='tojama4',font=self.font_nickname,
-                                 fg='white',bg='black',relief='flat',
-                                 highlightcolor='black',activeforeground='white',
-                                 activebackground='black',
-                                 bd=0,
-                                 command = self.btn_nickname_clicked,
-                                 highlightthickness=0, anchor="w")
-        self.button_nickname.place(x=79,y=46,width=150,height=25)
+
 
     def btn_nickname_clicked(self):
         print('btn nickname clicked')
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
 
-    def btn_clicked(self):
-        print("Button Clicked")
 
     def btn_add_playlist_clicked(self):
         self.top = Toplevel(self.window, takefocus=True)
@@ -378,7 +279,17 @@ class Left_menu():
                                                                         weight='bold',
                                                                         slant='italic'),
                                                                     fill="#AB3131")
-
+        elif  len(app.playlist) >=20:
+            self.background_canvas.delete(self.message_label)
+            self.message_label = self.background_canvas.create_text(111, 73,
+                                                                    anchor='nw',
+                                                                    text="Cannot add more playlist\n Maximum number of playlist is 20",
+                                                                    font=font.Font(
+                                                                        family='Ubuntu-Regular',
+                                                                        size=10,
+                                                                        weight='bold',
+                                                                        slant='italic'),
+                                                                    fill="#AB3131")
         else:
             self.background_canvas.delete(self.message_label)
             app.playlist.append(self.entry_add_playlist.get())
@@ -392,14 +303,15 @@ class Left_menu():
                                bd=0,
                                command=partial(self.btn_playlist_press,len(self.button_identities)),
                                relief="groove")
-            self.temp_button.place(x=0, y=app.left.last_postion + 47, width=283, height=47)
+
+            self.canvas.create_window(0,app.left.playlist_menu.last_postion, width=283 - int(self.vertibar['width']), height=47,anchor='nw',window=self.temp_button)
+            self.canvas.config(scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])+self.last_postion))
             print(type(self.temp_button))
             self.button_identities.append(self.temp_button)
 
-            app.left.last_postion = app.left.last_postion + 47
+            app.left.playlist_menu.last_postion = app.left.playlist_menu.last_postion + 47
             self.top.destroy()
             self.background_canvas.destroy()
-            # .place(x=0,y=443,width=283,height=47)
 
             self.create_playlist(temp_label)
 
@@ -418,6 +330,170 @@ class Left_menu():
                 print(f"{music}")
 
 
+
+class Left_menu():
+    def __init__(self,frame,canvas):
+        self.window = frame
+        self.canvas = canvas
+        self.playlist_path = "/home/mateusz/dwhelper"
+        self.button_identities = []
+
+        self.playlist_frame = Frame(self.window, bg='green', relief='flat')
+        self.playlist_frame.place(x=0, y=396, width=283, height=517)
+
+        self.playlist_frame_canvas = Canvas(
+            self.playlist_frame,
+            bg="black",
+            height=517,
+            width=283,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.playlist_frame_canvas.place(x=0, y=0)
+
+
+        self.playlist_menu = Playlist_Menu(self.playlist_frame, self.playlist_frame_canvas)
+
+
+
+
+
+        self.img_allMusic= PhotoImage(file=f"HOME.png")
+        self.btn_allMusic = Button(
+            text="ALL Music"+20*" ",
+            compound='right',
+            image=self.img_allMusic,
+            activebackground="green",
+            bg="black",
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_clicked,
+            relief="groove")
+
+        self.btn_allMusic.place(
+            x = 0, y = 104,
+            width = 283,
+            height = 47)
+
+        self.img_myMusic= PhotoImage(file=f"SONG.png")
+        self.btn_myMusic = Button(
+            text="MY Music"+20*" ",
+            compound='right',
+            image=self.img_myMusic,
+            activebackground="green",
+            bg="black",
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_clicked,
+            relief="groove")
+
+        self.btn_myMusic.place(
+            x = 0, y = 151,
+            width = 283,
+            height = 47)
+
+        self.img_shareDown= PhotoImage(file=f"shareDOWN.png")
+        self.btn_shareDown = Button(
+            text="MY Sharing"+18*" ",
+            compound='right',
+            image=self.img_shareDown,
+            activebackground="green",
+            bg="black",
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_clicked,
+            relief="groove")
+
+        self.btn_shareDown.place(
+            x = 0, y = 198,
+            width = 283,
+            height = 47)
+
+        self.img_shareUP= PhotoImage(file=f"shareUP.png")
+        self.btn_shareUP = Button(
+            text="Sharing ME"+18*" ",
+            compound='right',
+            image=self.img_shareUP,
+            activebackground="green",
+            bg="black",
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_clicked,
+            relief="groove")
+
+        self.btn_shareUP.place(
+            x = 0, y = 245,
+            width = 283,
+            height = 47)
+
+        self.img_Favourite= PhotoImage(file=f"HEART.png")
+        self.btn_Favourite = Button(
+            text="Favourite"+19*" ",
+            compound='right',
+            image=self.img_Favourite,
+            activebackground="green",
+            bg="black",
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_clicked,
+            relief="groove")
+
+        self.btn_Favourite.place(
+            x = 0, y = 292,
+            width = 283,
+            height = 47)
+
+        self.img_Upload= PhotoImage(file=f"UPLOAD_small.png")
+        self.btn_Upload = Button(
+            text="Send Music"+18*" ",
+            compound='right',
+            image=self.img_Upload,
+            activebackground="green",
+            bg="black",
+            fg='white',
+            highlightbackground='black',
+            bd=0,
+            command=self.btn_clicked,
+            relief="groove")
+
+        self.btn_Upload.place(
+            x = 0, y = 339,
+            width = 283,
+            height = 47)
+
+        self.distance_label = Label(bg="#3c3838")
+        self.distance_label.place(x=0,y=386,
+                             width=283,height=10)
+
+        self.image_default_user = PhotoImage(file = f"Rectangle 1.png")
+        self.default_user = Label(self.window,
+            image = self.image_default_user,bg='black')
+        self.default_user.place(x=21,y=21,width=50,height=50)
+
+        #to jest do poprawienia nie tak definiujemy czcionke,
+        self.font_nickname = font.Font(family='Helvetica',size=18, underline=1)
+        self.button_nickname = Button(self.window,text='tojama4',font=self.font_nickname,
+                                 fg='white',bg='black',relief='flat',
+                                 highlightcolor='black',activeforeground='white',
+                                 activebackground='black',
+                                 bd=0,
+                                 command = self.btn_nickname_clicked,
+                                 highlightthickness=0, anchor="w")
+        self.button_nickname.place(x=79,y=46,width=150,height=25)
+
+    def btn_nickname_clicked(self):
+        print('btn nickname clicked')
+        # content.__del__()
+        # Setting_menu(contentframe, contentframe_canvas)
+
+
+    def btn_clicked(self):
+        print("Button Clicked")
 
 
 class Play_menu():
@@ -455,13 +531,41 @@ class Content_menu():
     def __init__(self,frame,canvas):
         self.window = frame
         self.canvas = canvas
-
         self.button_list = []
+
+        # jest to pozycja po wyszukiwarce i po menu
+        self.last_record_position = 75
+
+
+        self.canvas.config(
+            scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + 200))
+        self.vertibar = Scrollbar(
+            self.window,
+            bd=0,
+            #highlightbackground = 'yellow',
+            #highlightcolor="red",
+            #highlightthickness=0,
+            troughcolor=self.canvas['bg'],
+            bg="#3C3838",
+            #style='arrowless.Vertical.TScrollbar',
+            activebackground="green",
+            orient='vertical'
+        )
+
+        self.vertibar.pack(side=RIGHT, fill=Y)
+        self.vertibar.config(command=self.canvas.yview)
+
+        self.canvas.config(
+            yscrollcommand=self.vertibar.set
+        )
+
+
         self.entry_search = Entry_Box(self.window, self.canvas, 141, 31, 758, 30, "Wyszukiwarka.png",
                                             90, "#C4C4C4")
         self.entry_search.background_canvas_image()
         self.entry_search.Place()
         self.entry_search.bind("<Return>", self.entry_search_focus)
+        self.entry_search.place_warun()
 
         self.img_setting = PhotoImage(file=f"setting_icon.png")
         self.but_setting = Button(self.window,
@@ -473,7 +577,8 @@ class Content_menu():
                                  bg=self.canvas['bg'],
                                  command=self.btn_setting_clicked,
                                  relief='flat')
-        self.but_setting_window = self.canvas.create_window(1085, 15, window=self.but_setting, anchor='nw')
+        #self.but_setting_window = self.canvas.create_window(1080, 15, window=self.but_setting, anchor='nw')
+        self.but_setting.place(x=1080,y=15)
 
         self.img_track_pause = PhotoImage(file=f"pause_label.png")
         self.img_track_play= PhotoImage(file=f"play_label.png")
@@ -490,15 +595,17 @@ class Content_menu():
             anchor = "w",
             relief="groove")
 
-        self.btn_track_play.place(
-            x = 0, y = 75,
-            width = 1158,
-            height = 38)
+        #
+        self.btn_track_play_window = self.canvas.create_window(0, 75, window=self.btn_track_play, anchor='nw',width=1158-int(self.vertibar['width']), height=38)
+        # self.btn_track_play.place(
+        #     x = 0, y = 75,
+        #     width = 1158,
+        #     height = 38)
 
 
     def __del__(self):
         self.entry_search.Destroy()
-        self.canvas.delete(self.but_setting_window)
+        #self.canvas.delete(self.but_setting_window)
         self.btn_track_play.destroy()
         Setting_menu(self.window, self.canvas)
 
@@ -541,10 +648,6 @@ class Setting_menu():
                                       orient = 'vertical',
                                       style = 'arrowless.Vertical.TScrollbar')
         """
-
-
-
-
 
         #Other sposob Create
         self.vertibar = Scrollbar(
