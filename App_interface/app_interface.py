@@ -500,12 +500,185 @@ class Play_menu():
     def __init__(self,frame, canvas):
         self.window = frame
         self.canvas = canvas
-        self.play_img = PhotoImage(file='Button(1).png')
-        self.play_button = Button(self.window, image=self.play_img, bd=0, command=self.play,highlightcolor='black',activeforeground='white',
-                                 activebackground='black',
-                                 highlightthickness=0)
-        pause_button =Button()
-        self.play_button.place(x=712,y=47,width=15.11, height =18.39)
+        # self.play_img = PhotoImage(file='Button(1).png')
+        # self.play_button = Button(self.window, image=self.play_img, bd=0, command=self.play,highlightcolor='black',activeforeground='white',
+        #                          activebackground='black',
+        #                          highlightthickness=0)
+        # pause_button =Button()
+        # self.play_button.place(x=712,y=47,width=15.11, height =18.39)
+        self.img_music =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/msuic.png")
+        self.music_window = self.canvas.create_image(23,18, anchor='nw', image=self.img_music)
+
+        self.text_labelmusic = self.canvas.create_text(122,18, anchor='nw', text="T.Love - King [Official Music Video] - YouTube.mp3",fill='white')
+
+        self.img_play_once =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/play_once.png")
+        self.but_play_once = Button(self.window,
+                                  image=self.img_play_once,
+                                  bd=0,
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  activebackground=self.canvas['bg'],
+                                  bg=self.canvas['bg'],
+                                  command=self.btn_clicked,
+                                  relief='flat')
+        self.but_previous_window = self.canvas.create_window(608, 46,width=30, height=30, window=self.but_play_once, anchor='nw')
+
+        self.img_previous =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/previous.png")
+        self.but_previous = Button(self.window,
+                                  image=self.img_previous,
+                                  bd=0,
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  activebackground=self.canvas['bg'],
+                                  bg=self.canvas['bg'],
+                                  command=self.btn_clicked,
+                                  relief='flat')
+        self.but_previous_window = self.canvas.create_window(664, 46,width=30, height=30, window=self.but_previous, anchor='nw')
+
+        self.img_play =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/play.png")
+        self.but_play = Button(self.window,
+                                  image=self.img_play,
+                                  bd=0,
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  activebackground=self.canvas['bg'],
+                                  bg=self.canvas['bg'],
+                                  command=self.btn_clicked,
+                                  relief='flat')
+        self.but_play_window = self.canvas.create_window(720, 46,width=30, height=30, window=self.but_play, anchor='nw')
+
+        self.img_next = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/next.png")
+        self.but_next = Button(self.window,
+                               image=self.img_next,
+                               bd=0,
+                               borderwidth=0,
+                               highlightthickness=0,
+                               activebackground=self.canvas['bg'],
+                               bg=self.canvas['bg'],
+                               command=self.btn_clicked,
+                               relief='flat')
+        self.but_next_window = self.canvas.create_window(776, 46, width=30, height=30, window=self.but_next,anchor='nw')
+
+        self.img_shuffle = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/shuffle.png")
+        self.but_shuffle = Button(self.window,
+                               image=self.img_shuffle,
+                               bd=0,
+                               borderwidth=0,
+                               highlightthickness=0,
+                               activebackground=self.canvas['bg'],
+                               bg=self.canvas['bg'],
+                               command=self.btn_clicked,
+                               relief='flat')
+        self.but_shuffle_window = self.canvas.create_window(832, 46, width=30, height=30, window=self.but_shuffle,anchor='nw')
+
+        self.img_favourite = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/HEART.png")
+        self.but_favourite = Button(self.window,
+                               image=self.img_favourite,
+                               bd=0,
+                               borderwidth=0,
+                               highlightthickness=0,
+                               activebackground=self.canvas['bg'],
+                               bg=self.canvas['bg'],
+                               command=self.btn_clicked,
+                               relief='flat')
+        self.but_favourite_window = self.canvas.create_window(1304, 46, width=30, height=30, window=self.but_favourite,anchor='nw')
+
+        self.img_share = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/share.png")
+        self.but_share = Button(self.window,
+                               image=self.img_share,
+                               bd=0,
+                               borderwidth=0,
+                               highlightthickness=0,
+                               activebackground=self.canvas['bg'],
+                               bg=self.canvas['bg'],
+                               command=self.btn_share_clicked,
+                               relief='flat')
+        self.but_favourite_window = self.canvas.create_window(1344, 46, width=30, height=30, window=self.but_share,anchor='nw')
+
+    def btn_clicked(self):
+        print('clicked button')
+
+    def btn_share_clicked(self):
+        self.top = Toplevel(self.window, takefocus=True)
+        self.top.geometry("478x302")
+        self.top.title("Share Music")
+        self.background_canvas = Canvas(
+            self.top,
+            bg="black",
+            height=302,
+            width=478,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.background_canvas.place(x=0, y=0)
+
+        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "Resore_Mail.png",
+                                            5, "#3c3838")
+        self.entry_add_playlist.background_canvas_image()
+        self.entry_add_playlist.Place()
+
+        self.img_cancel = PhotoImage(file=f"cancel_playlist.png")
+        self.but_cancel = Button(self.top,
+                                 image=self.img_cancel,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 command=self.btn_cancel_clicked,
+                                 relief='flat')
+        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+
+        self.img_add = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/share_but.png")
+        self.but_add = Button(self.top,
+                              image=self.img_add,
+                              bd=0,
+                              activebackground="black",
+                              bg="black",
+                              borderwidth=0,
+                              highlightthickness=0,
+                              relief='flat',
+                              command=self.share_music_clicked)
+        self.but_add_window = self.background_canvas.create_window(280, 186, window=self.but_add,
+                                                                   anchor='nw')
+        # self.but_restore.place
+        # x=280, y=186,
+        # width=76, height=37
+
+        self.add_playlist_label = self.background_canvas.create_text(23, 17,
+                                                                     anchor='nw',
+                                                                     text="Share music",
+                                                                     font=font.Font(family='Ubuntu-Regular',
+                                                                                    size=28), fill="white")
+
+        self.playlist_name_label = self.background_canvas.create_text(59, 103,
+                                                                      anchor='nw',
+                                                                      text="Music Name",
+                                                                      font=font.Font(
+                                                                          family='Ubuntu-Regular',
+                                                                          size=10,
+                                                                          weight='bold',
+                                                                          slant='italic'),
+                                                                      fill="#3c3838")
+
+        self.message_label = self.background_canvas.create_text(111, 73,
+                                                                anchor='nw',
+                                                                text="",
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=10,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+
+
+    def btn_cancel_clicked(self):
+        self.top.destroy()
+
+    def share_music_clicked(self):
+        print('clicked')
+
+
 
     def play(self):
         #play_button.destroy()
@@ -685,7 +858,7 @@ class Setting_menu():
         self.window = frame
         self.canvas = canvas
 
-        self.canvas.config(scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + 200))
+        self.canvas.config(scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + 400))
 
         """
         style = ttk.Style(self.window)
@@ -1061,7 +1234,7 @@ class App_Interface():
             bd=0,
             highlightthickness=0,
             relief="ridge")
-        self.playframe_canvas.place(x=0, y=913)
+        self.playframe_canvas.place(x=0, y=0)
 
         self.play_menu = Play_menu(self.playframe, self.playframe_canvas)
 
