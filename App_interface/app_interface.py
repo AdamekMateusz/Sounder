@@ -137,7 +137,7 @@ class Playlist_Menu():
         self.playlist_label.place(x=0,y=396, width=283 - int(self.vertibar['width']), height=47)
         self.last_postion = self.last_postion + 47
 
-        self.img_add_playlist = PhotoImage(file=f'ADD2.png')
+        self.img_add_playlist = PhotoImage(file=f'/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/ADD2.png')
         self.btn_add_playlist = Button(
             image=self.img_add_playlist,
             activebackground='green',
@@ -186,7 +186,7 @@ class Playlist_Menu():
         self.entry_add_playlist.background_canvas_image()
         self.entry_add_playlist.Place()
 
-        self.img_cancel = PhotoImage(file=f"cancel_playlist.png")
+        self.img_cancel = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/cancel_playlist.png")
         self.but_cancel = Button(self.top,
                                  image=self.img_cancel,
                                  bd=0,
@@ -198,7 +198,7 @@ class Playlist_Menu():
                                  relief='flat')
         self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
 
-        self.img_add = PhotoImage(file=f"ADD_playlist.png")
+        self.img_add = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/ADD_playlist.png")
         self.but_add = Button(self.top,
                               image=self.img_add,
                               bd=0,
@@ -358,7 +358,7 @@ class Left_menu():
 
 
 
-        self.img_allMusic= PhotoImage(file=f"HOME.png")
+        self.img_allMusic= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/HOME.png")
         self.btn_allMusic = Button(
             text="ALL Music"+20*" ",
             compound='right',
@@ -376,7 +376,7 @@ class Left_menu():
             width = 283,
             height = 47)
 
-        self.img_myMusic= PhotoImage(file=f"SONG.png")
+        self.img_myMusic= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/SONG.png")
         self.btn_myMusic = Button(
             text="MY Music"+20*" ",
             compound='right',
@@ -394,7 +394,7 @@ class Left_menu():
             width = 283,
             height = 47)
 
-        self.img_shareDown= PhotoImage(file=f"shareDOWN.png")
+        self.img_shareDown= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/shareDOWN.png")
         self.btn_shareDown = Button(
             text="MY Sharing"+18*" ",
             compound='right',
@@ -412,7 +412,7 @@ class Left_menu():
             width = 283,
             height = 47)
 
-        self.img_shareUP= PhotoImage(file=f"shareUP.png")
+        self.img_shareUP= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/shareUP.png")
         self.btn_shareUP = Button(
             text="Sharing ME"+18*" ",
             compound='right',
@@ -430,7 +430,7 @@ class Left_menu():
             width = 283,
             height = 47)
 
-        self.img_Favourite= PhotoImage(file=f"HEART.png")
+        self.img_Favourite= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/HEART.png")
         self.btn_Favourite = Button(
             text="Favourite"+19*" ",
             compound='right',
@@ -448,7 +448,7 @@ class Left_menu():
             width = 283,
             height = 47)
 
-        self.img_Upload= PhotoImage(file=f"UPLOAD_small.png")
+        self.img_Upload= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/UPLOAD_small.png")
         self.btn_Upload = Button(
             text="Send Music"+18*" ",
             compound='right',
@@ -470,7 +470,7 @@ class Left_menu():
         self.distance_label.place(x=0,y=386,
                              width=283,height=10)
 
-        self.image_default_user = PhotoImage(file = f"Rectangle 1.png")
+        self.image_default_user = PhotoImage(file = f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/Rectangle 1.png")
         self.default_user = Label(self.window,
             image = self.image_default_user,bg='black')
         self.default_user.place(x=21,y=21,width=50,height=50)
@@ -617,7 +617,7 @@ class Play_menu():
         self.entry_add_playlist.background_canvas_image()
         self.entry_add_playlist.Place()
 
-        self.img_cancel = PhotoImage(file=f"cancel_playlist.png")
+        self.img_cancel = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/cancel_playlist.png")
         self.but_cancel = Button(self.top,
                                  image=self.img_cancel,
                                  bd=0,
@@ -682,7 +682,7 @@ class Play_menu():
 
     def play(self):
         #play_button.destroy()
-        self.pause_img=PhotoImage(file='Pause.png')
+        self.pause_img=PhotoImage(file='/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/Pause.png')
         self.play_button.configure(image=self.pause_img)
     #     pause_button = Button(playframe, image=pause_img, bd=0, command=pause, highlightcolor='black',
     #                          activeforeground='white',
@@ -703,13 +703,13 @@ class Content_search():
         self.window = frame
         self.canvas = canvas
 
-        self.entry_search = Entry_Box(self.window, self.canvas, 141, 31, 758, 30, "Wyszukiwarka.png",
+        self.entry_search = Entry_Box(self.window, self.canvas, 141, 31, 758, 30, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/Wyszukiwarka.png",
                                             90, "#C4C4C4")
         self.entry_search.background_canvas_image()
         self.entry_search.Place()
         self.entry_search.bind("<Return>", self.entry_search_focus)
 
-        self.img_setting = PhotoImage(file=f"setting_icon.png")
+        self.img_setting = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/setting_icon.png")
         self.but_setting = Button(self.window,
                                  image=self.img_setting,
                                  bd=0,
@@ -769,8 +769,8 @@ class Content_play():
             yscrollcommand=self.vertibar.set
         )
 
-        self.img_track_pause = PhotoImage(file=f"pause_label.png")
-        self.img_track_play= PhotoImage(file=f"play_label.png")
+        self.img_track_pause = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/pause_label.png")
+        self.img_track_play= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/play_label.png")
         self.btn_track_play = Button(self.window,
             text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
             compound='left',
@@ -923,7 +923,7 @@ class Setting_menu():
                                       slant='italic'),
                                   fill="white")
 
-        self.img_proffile =PhotoImage(file=f"setting_account_image.png")
+        self.img_proffile =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/setting_account_image.png")
         self.but_profile = Button(self.window,
                                   image=self.img_proffile,
                                   bd=0,
@@ -956,7 +956,7 @@ class Setting_menu():
 
 
 
-        self.img_back = PhotoImage(file=f"back_white_img.png")
+        self.img_back = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/back_white_img.png")
         self.but_back = Button(self.window,
                                   image=self.img_back,
                                   bd=0,
@@ -997,7 +997,7 @@ class Setting_menu():
                                                               weight='bold',
                                                               slant='italic'),
                                                           fill="white")
-        self.img_describe = PhotoImage(file=f"describe_rectangle.png")
+        self.img_describe = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/describe_rectangle.png")
         self.describe_image = self.canvas.create_image(145,456,image=self.img_describe,anchor='nw')
 
         self.text_describeBox = Text(self.window,
@@ -1017,7 +1017,7 @@ class Setting_menu():
         self.text_describeBox_window = self.canvas.create_window(153,458,anchor='nw',width=808,height=165,window=self.text_describeBox)
 
 
-        self.img_edit = PhotoImage(file=f"edit_setting.png")
+        self.img_edit = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/edit_setting.png")
         self.but_edit = Button(self.window,
                                  image=self.img_edit,
                                  bd=0,
@@ -1029,7 +1029,7 @@ class Setting_menu():
                                  relief='flat')
         self.but_edit_window = self.canvas.create_window(785, 647, window=self.but_edit, anchor='nw')
 
-        self.img_save = PhotoImage(file=f"save_setting.png")
+        self.img_save = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/save_setting.png")
         self.but_save = Button(self.window,
                                  image=self.img_save,
                                  bd=0,
@@ -1096,7 +1096,7 @@ class Setting_menu():
         self.entry_retype_password.background_canvas_image()
         self.entry_retype_password.Place()
 
-        self.img_change = PhotoImage(file=f"change_setting.png")
+        self.img_change = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/change_setting.png")
         self.but_change = Button(self.window,
                                  image=self.img_change,
                                  bd=0,
@@ -1261,16 +1261,16 @@ class App_Interface():
         # setting = Setting_menu(contentframe, contentframe_canvas)
 
 
+class Run():
+    window = Tk()
+    window.geometry("1440x1024")
+    window.configure(bg="#ffffff")
+    window.resizable(False, False)
 
-window = Tk()
-window.geometry("1440x1024")
-window.configure(bg="#ffffff")
-window.resizable(False, False)
-
-app = App_Interface(window)
+    app = App_Interface(window)
 
 
-window.mainloop()
+    window.mainloop()
 
 
 
