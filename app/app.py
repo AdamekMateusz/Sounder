@@ -415,6 +415,9 @@ class Left_menu():
         self.button_nickname.place(x=79,y=46,width=150,height=25)
 
     def btn_nickname_clicked(self):
+        #content
+        self.app.content.__del__()
+        self.app.setting.__init__(self.app.contentframe, self.app.contentframe_canvas,self.app)
         print('btn nickname clicked')
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
@@ -665,7 +668,7 @@ class Content_search():
         # app.content.content_search.__del__()
         # app.content.content_play.__del__()
         self.app.content.__del__()
-        self.app.setting = Setting_menu(self.app.contentframe, self.app.contentframe_canvas,self.app)
+        self.app.setting.__init__(self.app.contentframe, self.app.contentframe_canvas,self.app)
     def __del__(self):
         # self.canvas.delete("all")
         # self.entry_search.Destroy()
@@ -772,7 +775,7 @@ class Content_play():
 
     def btn_podstawowy_clicked(self):
         print('Content_paly pressed button')
-        os.system('pkill -9 client2')
+        os.system('pkill -9 client2.py')
         self.conn.exit_stream()
         if self.tt is not None:
             self.tt.join()
@@ -1179,7 +1182,9 @@ class Setting_menu():
     def btn_back_clicked(self):
         self.__del__()
         #Content_menu(self.window,self.canvas,self.app)
-        self.app.content = Content_menu(self.window,self.canvas, self.app)
+        #self.app.content = Content_menu(self.window,self.canvas, self.app)
+        #tu wczesniej bylo to wyzej
+        self.app.content.__init__(self.window, self.canvas,self.app)
 
     def select_file(self):
         filetypes = (
@@ -1222,7 +1227,7 @@ class App_Interface():
             relief="ridge")
         self.leftframe_canvas.place(x=0, y=0)
 
-        self.left = Left_menu(self.leftframe, self.leftframe_canvas)
+        self.left = Left_menu(self.leftframe, self.leftframe_canvas,self)
 
         self.playframe = Frame(self.window, bg='black', relief='flat')
         self.playframe.place(x=0, y=913, width=1440, height=112)
@@ -1256,6 +1261,8 @@ class App_Interface():
             relief="ridge")
         self.contentframe_canvas.place(x=0, y=0)
 
+        self.setting = Setting_menu(self.contentframe, self.contentframe_canvas, self)
+        self.setting.__del__()
 
         self.content = Content_menu(self.contentframe, self.contentframe_canvas, self)
 

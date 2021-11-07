@@ -115,10 +115,16 @@ class Restore_window():
 
 
 class Register_menu():
-    def __init__(self, window, canvas):
+    def __init__(self, window, canvas, app_interface=None):
+        self.app = app_interface
         self.window = window
         self.canvas = canvas
         self.password_visibility = False
+
+        self.background_img = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/background.png")
+        self.background_window= self.canvas.create_image(
+            400.0, 200.0,
+            image=self.background_img)
         self.comunicat_label = canvas.create_text(0, 0, text='')
 
         self.entry_nickname = Entry_Box(self.window, self.canvas, 494, 50, 255, 45,
@@ -243,7 +249,8 @@ class Register_menu():
 
     def back_to_login_page(self):
         self.__del__()
-        Login_menu(self.window,self.canvas)
+        #Login_menu(self.window,self.canvas)
+        self.app.login.__init__(self.window, self.canvas,self.app)
         print('pajac')
 
     def show_password(self):
@@ -261,12 +268,20 @@ class Register_menu():
 
 
 class Login_menu():
-    def __init__(self, window, canvas):
-        self.clicked_login = False
-        self.result = False
+    def __init__(self, window, canvas, app_interface = None):
+        self.app = app_interface
         self.window = window
         self.canvas = canvas
+
+        self.clicked_login = False
+        self.result = False
         self.password_visibility = False
+
+        self.background_img = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/background.png")
+        self.background_window= self.canvas.create_image(
+            400.0, 200.0,
+            image=self.background_img)
+
         self.comunicat_label = canvas.create_text(0, 0, text='')
 
         self.entry_password = Entry_Box(self.window, self.canvas, 494, 162, 255, 45,
@@ -486,7 +501,7 @@ class Login_menu():
 
     def btn_register_clicked(self):
         self.__del__()
-        Register_menu(self.window, self.canvas)
+        self.register= Register_menu(self.window, self.canvas,self.app)
         print("slon")
         #self.__init__(self.window,self.canvas)
 
@@ -514,8 +529,8 @@ class Login_menu():
         else:
             print('zyraga')
 
-        self.clicked_login = True
-        self.window.destroy()
+        # self.clicked_login = True
+        # self.window.destroy()
 
     def show_register_password(self, event):
         # password_text = StringVar(window, value='')
@@ -570,6 +585,25 @@ class Login_menu():
         self.entry_login.Destroy()
         self.entry_password.Destroy()
         print('button destroy')
+
+
+class Interface():
+    def __init__(self, window):
+        self.window = window
+
+        self.login_canvas = Canvas(
+        window,
+        bg="#ffffff",
+        height=400,
+        width=800,
+        bd=0,
+        highlightthickness=0,
+        relief="ridge")
+        self.login_canvas.place(x=0, y=0)
+
+        self.login = Login_menu(self.window, self.login_canvas, self)
+
+
 
 #
 # window = Tk()
