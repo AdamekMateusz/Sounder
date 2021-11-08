@@ -4,7 +4,9 @@ conn = psycopg2.connect('host=192.168.1.4 user=pi password=inz178 dbname=sounder
 
 cur = conn.cursor()
 
-cur.execute('select * from userdata')
+A = cur.execute('select * from userdata')
+
+
 
 results = cur.fetchall()
 
@@ -24,7 +26,7 @@ END
 ;
 """
 
-user = 'admins'
+user = 'adminsss'
 password = '000000'
 #SELECT COALESCE((select column from table where condition1 and condition2), FALSE);
 
@@ -38,11 +40,15 @@ data = [user,password]
 cur.execute("""SELECT COUNT(*) FROM userdata WHERE nick=(%s) and password=(%s)""",(user,password))
 
 wartosc = cur.fetchall()
+print(wartosc,' : wartosc')
 print(int(wartosc[0][0]))
 
-cur.execute("""SELECT COUNT(*) FROM userdata WHERE nick=(%s) and hash=(%s)""",(user,password))
+#cur.execute("""SELECT COUNT(*) FROM userdata WHERE nick=(%s) and hash=(%s)""",(user,password))
+
+cur.execute("""SELECT COUNT(*) FROM userdata WHERE nick=(%s)""",(user,))
 
 #ten dziala
 #cur.execute("""SELECT COUNT(*) FROM userdata WHERE nick='admins' and password='admins'""")
 wartosc = cur.fetchall()
+print(wartosc,' : wartosc')
 print(int(wartosc[0][0]))

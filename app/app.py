@@ -22,6 +22,7 @@ import time
 
 
 
+
 # class Add_playlist_window():
 #     def __init__(self,window):
 
@@ -729,14 +730,16 @@ class Content_play():
         self.btn_track_play_window = self.canvas.create_window(0, 0, window=self.btn_track_play, anchor='nw',
                                                                width=1157 - int(self.vertibar['width']), height=38)
 
-        self.podstwowy = Button(self.window, text='podtwaowy', command = self.btn_podstawowy_clicked)
-        self.canvas.create_window(200,200, anchor='nw', window= self.podstwowy)
+        self.podstwowy = Button(self.window, image=self.img_track_pause, command = self.btn_podstawowy_clicked)
+        self.canvas.create_window(0,0, anchor='nw', window= self.podstwowy)
 
     def play_local(self):
         self.play_local_pid = os.system("python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/client2.py")
         #exec(open('client2.py').read())
 
     def thread(self):
+        self.btn_track_play.configure(image= self.img_track_pause)
+        
         self.tt =Thread(target=self.play).start()
         time.sleep(0.5)
         self.mm = Thread(target=self.play_local).start()
@@ -752,7 +755,7 @@ class Content_play():
 
     def btn_track_clicked(self):
         print("label track clicked")
-        print(self.btn_track_play['image'])
+        #print(self.btn_track_play['image'])
 
         if self.play_label_press == False:
             x = Thread(target=self.play)
@@ -770,11 +773,14 @@ class Content_play():
         if self.btn_track_play['image'] == "pyimage13":
             self.btn_track_play.config(image=self.img_track_pause)
             # playsound(os.path.join("/home/mateusz/dwhelper/ROCK",str(self.btn_track_play['text'])))
+            print('piuropusz')
         else:
             self.btn_track_play.config(image=self.img_track_play)
+            print('balwan')
 
     def btn_podstawowy_clicked(self):
         print('Content_paly pressed button')
+        self.btn_track_play.configure(image=self.img_track_pause)
         os.system('pkill -9 client2.py')
         self.conn.exit_stream()
         if self.tt is not None:
@@ -831,8 +837,8 @@ class Content_menu():
         self.content_play = Content_play(self.content_play_frame, self.content_play_canvas,self.app)
 
     def __del__(self):
-        # self.content_play.__del__()
-        # self.content_search.__del__()
+        self.content_play.__del__()
+        self.content_search.__del__()
         self.content_search_canvas.destroy()
         self.content_play_canvas.destroy()
         self.content_search_frame.destroy()
@@ -1209,6 +1215,10 @@ class App_Interface():
 
         self.playlist = []
         # button_identities = []
+
+        self.nick = 'user'
+        self.mail = 'user@mail.com'
+
 
         self.leftframe = Frame(self.window, bg='black', relief='flat')
         self.leftframe.place(

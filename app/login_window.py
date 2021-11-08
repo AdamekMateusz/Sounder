@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import font
 
 from entry_box import *
+from connect import *
+import hashlib
 
 
 class Restore_window():
@@ -231,17 +233,36 @@ class Register_menu():
 
     def registerclick(self):
         print('register__pressed')
+        check = [True]
         self.canvas.delete(self.comunicat_label)
-        if self.entry_password.get() != self.entry_repassword.get():
+        if len(self.entry_password.get()) < 8 and  len(self.entry_repassword.get()) < 8:
             self.canvas.delete(self.comunicat_label)
-            self.comunicat_label = self.canvas.create_text(491, 12, text='Passowrd is not the same', fill="#AB3131")
-        if self.entry_nickname == "admin":
-            self.canvas.delete(self.comunicat_label)
-            self.comunicat_label = self.canvas.create_text(491, 12, text='User is exsist', fill="#AB3131")
-        if self.entry_mail.get() == "admin@mail.com":
-            self.canvas.delete(self.comunicat_label)
-            self.comunicat_label = self.canvas.create_text(491, 12, text='User is exist', fill="#AB3131")
+            self.comunicat_label = self.canvas.create_text(491, 12, text='Password is to short, Minimum 8 sign', fill="#AB3131")
+            check.append(False)
         else:
+            if self.entry_password.get() != self.entry_repassword.get():
+                self.canvas.delete(self.comunicat_label)
+                self.comunicat_label = self.canvas.create_text(491, 12, text='Passowrd is not the same', fill="#AB3131")
+                check.append(False)
+
+
+        if int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE nick=(%s)""",(self.entry_nickname.get(),))[0][0]) == 1:
+            self.canvas.delete(self.comunicat_label)
+            self.comunicat_label = self.canvas.create_text(491, 12, text='This nickname is in use', fill="#AB3131")
+            check.append(False)
+        if int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE nick=(%s)""",(self.entry_mail.get(),))[0][0]) == 1:
+            self.canvas.delete(self.comunicat_label)
+            self.comunicat_label = self.canvas.create_text(491, 12, text='This mail is in use', fill="#AB3131")
+            check.append(False)
+
+        if all(check):
+            str2hash = self.entry_nickname.get() + self.entry_mail.get()
+            hash_string = str(hashlib.md5(str2hash.encode()).hexdigest())
+
+            self.app.conn.execute_insert(""" INSERT INTO userdata (nick, mail, password,hash) VALUES(%s, %s, %s, %s)""",(self.entry_nickname.get(),self.entry_mail.get(),self.entry_password.get(),hash_string))
+            #self.app.conn.execute_insert(""" INSERT INTO userdata (nick, mail, password,hash) VALUES(%s, %s, %s, %s)""",('pies12','bury12@wp.pl','adminadmin','123362cab10cd5ebbd24f91d2af23d44'))
+            #self.app.conn.commited()
+            #INSERT INTO userdata (nick,mail,password,hash) VALUES ('pies', 'bury@wp.pl','adminadmin','989362cab10cd5ebbd24f91d2af23d44')
             self.canvas.delete(self.comunicat_label)
             self.comunicat_label = self.canvas.create_text(491, 12, text='Succesfully registrated', fill="#159C2B")
 
@@ -515,19 +536,39 @@ class Login_menu():
     def btn_login_clicked(self):
         self.canvas.delete(self.comunicat_label)
         print('malpa')
-        if self.entry_login.get() != 'admin':
-            self.comunicat_label = self.canvas.create_text(491, 12, anchor='nw', text="This user not exsist",
-                                                           justify='center', fill="#AB3131")
+        # if int(self.app.conn.execute("""SELECT COUNT(*) FROM userdata WHERE nick=(%s) and hash=(%s)""",(self.entry_login.get(),self.entry_password.get()))[0][0]) == 0:
+        #     self.comunicat_label = self.canvas.create_text(491, 12, anchor='nw', text="Incorrect nickname or password ",
+        #                                                    justify='center', fill="#AB3131")
 
-        elif self.entry_login.get() == 'admin' and self.entry_password.get() != 'admin':
-            self.comunicat_label = self.canvas.create_text(491, 12, anchor='nw', text="Incorrect nickname or password ",
-                                                           fill="#AB3131")
-        elif self.entry_login.get() == 'admin' and self.entry_password.get() == 'admin':
+        # elif self.entry_login.get() == 'admin' and self.entry_password.get() != 'admin':
+        #     self.comunicat_label = self.canvas.create_text(491, 12, anchor='nw', text="Incorrect nickname or password ",
+        #                                                    fill="#AB3131")
+        if int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE nick=(%s) and hash=(%s)""",(self.entry_login.get(),self.entry_password.get()))[0][0]) == 1:
             print('slon')
+            self.app.nick = self.entry_login.get()
+            self.clicked_login = True
+            self.window.destroy()
+        elif int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE nick=(%s) and password=(%s)""",(self.entry_login.get(),self.entry_password.get()))[0][0]) == 1:
+            print('slon')
+            self.app.nick = self.entry_login.get()
+            self.clicked_login = True
+            self.window.destroy()
+        elif int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE mail=(%s) and hash=(%s)""",(self.entry_login.get(),self.entry_password.get()))[0][0]) == 1:
+            print('slon')
+            self.app.mail = self.entry_login.get()
+            self.clicked_login = True
+            self.window.destroy()
+        elif int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE mail=(%s) and password=(%s)""",(self.entry_login.get(),self.entry_password.get()))[0][0]) == 1:
+            print('slon')
+            self.app.mail = self.entry_login.get()
             self.clicked_login = True
             self.window.destroy()
         else:
-            print('zyraga')
+            self.comunicat_label = self.canvas.create_text(491, 12, anchor='nw', text="Incorrect nickname or password ",
+                                                       justify='center', fill="#AB3131")
+
+        # else:
+        #     print('zyraga')
 
         # self.clicked_login = True
         # self.window.destroy()
@@ -602,7 +643,9 @@ class Interface():
         self.login_canvas.place(x=0, y=0)
 
         self.login = Login_menu(self.window, self.login_canvas, self)
-
+        self.conn = Connect('192.168.1.4','pi','inz178','sounder')
+        self.nick = None
+        self.mail = None
 
 
 #
