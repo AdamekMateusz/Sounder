@@ -11,10 +11,10 @@ from tkinter.messagebox import showinfo
 import time
 from tkinter import font
 from threading import Thread
-
 from entry_box import *
 from paramiko2 import *
-import time
+from connect import *
+from ssh import *
 
 
 
@@ -406,7 +406,7 @@ class Left_menu():
 
         #to jest do poprawienia nie tak definiujemy czcionke,
         self.font_nickname = font.Font(family='Helvetica',size=18, underline=1)
-        self.button_nickname = Button(self.window,text='tojama4',font=self.font_nickname,
+        self.button_nickname = Button(self.window,text=self.app.nick,font=self.font_nickname,
                                  fg='white',bg='black',relief='flat',
                                  highlightcolor='black',activeforeground='white',
                                  activebackground='black',
@@ -852,6 +852,8 @@ class Setting_menu():
         self.app = app_interface
         self.window = frame
         self.canvas = canvas
+        print(self.app.mail)
+        print(self.app.nick)
         #self.canvas = canvas
 
 
@@ -977,7 +979,7 @@ class Setting_menu():
 
         self.your_nickname_label = self.canvas.create_text(275, 212,
                                                           anchor='nw',
-                                                          text="tojama4",
+                                                          text=self.app.nick,
                                                           font=font.Font(
                                                               family='Ubuntu-Regular',
                                                               size=24,
@@ -987,7 +989,7 @@ class Setting_menu():
 
         self.your_mail_label = self.canvas.create_text(275, 260,
                                                           anchor='nw',
-                                                          text="mateusz20.08.1999@gmail.com",
+                                                          text=self.app.mail,
                                                           font=font.Font(
                                                               family='Ubuntu-Regular',
                                                               size=24,
@@ -1014,13 +1016,18 @@ class Setting_menu():
                                      highlightbackground = "#C4C4C4",
                                      highlightcolor="#C4C4C4",
                                      relief="flat",
-                                     state=DISABLED,
+                                     state=NORMAL,
                                      font=font.Font(
                                          family='Ubuntu-Regular',
                                          size=10,
                                          weight='normal',
                                          slant='roman'))
 
+
+        quote = self.app.conn.execute_get("""SELECT description FROM userdata WHERE nick=(%s)""", (self.app.nick, ))
+        if quote[0][0]:
+            self.text_describeBox.insert(END, quote[0][0])
+        self.text_describeBox.config(state=DISABLED)
         self.text_describeBox_window = self.canvas.create_window(153,458,anchor='nw',width=808,height=165,window=self.text_describeBox)
 
 
@@ -1111,7 +1118,7 @@ class Setting_menu():
                                  highlightthickness=0,
                                  activebackground=self.canvas['bg'],
                                  bg=self.canvas['bg'],
-                                 command=self.btn_clicked,
+                                 command=self.btn_change_password_clicked,
                                  relief='flat')
         self.but_change_window = self.canvas.create_window(514, 1164, window=self.but_change, anchor='nw')
 
@@ -1134,7 +1141,8 @@ class Setting_menu():
         self.canvas.delete("all")
         #self.canvas.configure(yscrollcommand=-1)
 
-
+    def btn_change_password_clicked(self):
+        pass
 
 
     def btn_clicked(self):
@@ -1180,10 +1188,15 @@ class Setting_menu():
 
     def btn_save_clicked(self):
         self.text_describeBox.config(state=DISABLED)
-        A = self.text_describeBox.get("1.0", END)
-        print(A.index)
-        print(A)
-        print(len(A))
+        description = str(self.text_describeBox.get("1.0", END))
+        if len(description) > 900:
+            description = description[:899]
+        sql = """UPDATE userdata SET description=(%s) WHERE nick=(%s)"""
+        vars = description,self.app.nick
+        self.app.conn.execute_update(sql,vars)
+        print(description.index)
+
+
 
     def btn_back_clicked(self):
         self.__del__()
@@ -1210,15 +1223,22 @@ class Setting_menu():
 
 
 class App_Interface():
-    def __init__(self,window):
+    def __init__(self,window,nick,mail):
         self.window = window
 
         self.playlist = []
         # button_identities = []
 
-        self.nick = 'user'
-        self.mail = 'user@mail.com'
+        self.nick = nick
+        self.mail = mail
+        self.conn = Connect('192.168.1.4', 'pi', 'inz178', 'sounder')
 
+        ssh = SSH()
+        self.session = ssh.connect()
+        self.user_update()
+
+        print(self.mail)
+        print(self.nick)
 
         self.leftframe = Frame(self.window, bg='black', relief='flat')
         self.leftframe.place(
@@ -1276,7 +1296,14 @@ class App_Interface():
 
         self.content = Content_menu(self.contentframe, self.contentframe_canvas, self)
 
-        # setting = Setting_menu(contentframe, contentframe_canvas)
+
+    def user_update(self):
+        if self.mail == None:
+            self.mail = str(self.conn.execute_get("""SELECT mail FROM userdata WHERE nick=(%s)""", (self.nick,))[0][0])
+        if self.nick == None:
+            self.nick = str(self.conn.execute_get("""SELECT nick FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
+
+
 
 
 

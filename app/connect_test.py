@@ -26,7 +26,7 @@ END
 ;
 """
 
-user = 'adminsss'
+user = 'admin'
 password = '000000'
 #SELECT COALESCE((select column from table where condition1 and condition2), FALSE);
 
@@ -52,3 +52,9 @@ cur.execute("""SELECT COUNT(*) FROM userdata WHERE nick=(%s)""",(user,))
 wartosc = cur.fetchall()
 print(wartosc,' : wartosc')
 print(int(wartosc[0][0]))
+
+cur.execute("""UPDATE userdata SET description = 'Pies andrzej i jego gwiazdy' WHERE nick='admin'""",(user,))
+cur.execute(""" SELECT description FROM userdata WHERE nick =(%s)""", (user,))
+wartosc = cur.fetchall()
+print(wartosc,' : wartosc')
+print(wartosc[0][0])

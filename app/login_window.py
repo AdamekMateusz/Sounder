@@ -1,9 +1,10 @@
 from tkinter import *
 from tkinter import font
-
+import os
 from entry_box import *
 from connect import *
 import hashlib
+from ssh import *
 
 
 class Restore_window():
@@ -122,6 +123,13 @@ class Register_menu():
         self.window = window
         self.canvas = canvas
         self.password_visibility = False
+        self.dir_users = "/home/pi/app/Users"
+        self.dir_ALL_MUSIC = 'ALL_MUSIC'
+        self.dir_MY_MUSIC = 'MY_MUSIC'
+        self.dir_MY_SHARING = 'MY_SHARING'
+        self.dir_SHARING_ME = 'SHARING_ME'
+        self.dir_FAVOURITE = 'FAVOURITE'
+
 
         self.background_img = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/background.png")
         self.background_window= self.canvas.create_image(
@@ -260,9 +268,20 @@ class Register_menu():
             hash_string = str(hashlib.md5(str2hash.encode()).hexdigest())
 
             self.app.conn.execute_insert(""" INSERT INTO userdata (nick, mail, password,hash) VALUES(%s, %s, %s, %s)""",(self.entry_nickname.get(),self.entry_mail.get(),self.entry_password.get(),hash_string))
-            #self.app.conn.execute_insert(""" INSERT INTO userdata (nick, mail, password,hash) VALUES(%s, %s, %s, %s)""",('pies12','bury12@wp.pl','adminadmin','123362cab10cd5ebbd24f91d2af23d44'))
-            #self.app.conn.commited()
-            #INSERT INTO userdata (nick,mail,password,hash) VALUES ('pies', 'bury@wp.pl','adminadmin','989362cab10cd5ebbd24f91d2af23d44')
+
+            self.user_path = os.path.join(self.dir_users,str(),str(self.entry_nickname.get()))
+
+            self.app.session.exec_command(f'rm -r {self.user_path}')
+            self.app.session.exec_command(f'mkdir {self.user_path}')
+
+            #make sybfodlers
+            self.app.session.exec_command(f'mkdir {os.path.join(self.user_path,self.dir_ALL_MUSIC)}')
+            self.app.session.exec_command(f'mkdir {os.path.join(self.user_path, self.dir_MY_MUSIC)}')
+            self.app.session.exec_command(f'mkdir {os.path.join(self.user_path, self.dir_MY_SHARING)}')
+            self.app.session.exec_command(f'mkdir {os.path.join(self.user_path, self.dir_SHARING_ME)}')
+            self.app.session.exec_command(f'mkdir {os.path.join(self.user_path, self.dir_FAVOURITE)}')
+
+
             self.canvas.delete(self.comunicat_label)
             self.comunicat_label = self.canvas.create_text(491, 12, text='Succesfully registrated', fill="#159C2B")
 
@@ -632,6 +651,11 @@ class Interface():
     def __init__(self, window):
         self.window = window
 
+        self.nick = None
+        self.mail = None
+        ssh = SSH()
+        self.session = ssh.connect()
+
         self.login_canvas = Canvas(
         window,
         bg="#ffffff",
@@ -644,8 +668,7 @@ class Interface():
 
         self.login = Login_menu(self.window, self.login_canvas, self)
         self.conn = Connect('192.168.1.4','pi','inz178','sounder')
-        self.nick = None
-        self.mail = None
+
 
 
 #

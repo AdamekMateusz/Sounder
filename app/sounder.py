@@ -29,8 +29,8 @@ if __name__ == "__main__":
         root.geometry("1440x1024")
         root.configure(bg="#ffffff")
         root.resizable(False, False)
-        app = App_Interface(root)
-        app.nick = app_login.nick
-        app.mail = app_login.mail
+        app = App_Interface(root,app_login.nick,app_login.mail)
+        # app.nick = app_login.nick
+        # app.mail = app_login.mail
 
         root.mainloop()

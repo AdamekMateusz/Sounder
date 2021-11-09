@@ -24,6 +24,9 @@ class Connect(psycopg2.extensions.connection):
         self.cursor.execute(*args)
         self.conn.commit()
 
+    def execute_update(self, sql,arg):
+        self.cursor.execute(sql,arg)
+        self.conn.commit()
 
 
 #C = Connect('192.168.1.4','pi','inz178','sounder')
