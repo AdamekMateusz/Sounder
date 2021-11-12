@@ -5,10 +5,12 @@ from entry_box import *
 from connect import *
 import hashlib
 from ssh import *
+from utilities import Md5, SendMail
 
 
 class Restore_window():
-    def __init__(self, window):
+    def __init__(self, window, app_interface):
+        self.app = app_interface
         self.window = window
         self.top = Toplevel(self.window, takefocus=True)
         # self.window.withdraw()
@@ -93,7 +95,10 @@ class Restore_window():
 
     def btn_restore_clicked(self):
         # Jesli jakis email wystepuje w bazie danych to wyswielt, zielony komunikat, resstore massage was send
-        if self.entry_restore_mail.get() == "admin@op.pl":
+        mail = self.entry_restore_mail.get()
+        if int(self.app.conn.execute_get("""SELECT COUNT(*) FROM userdata WHERE mail=(%s)""",(mail,))[0][0]) == 1:
+            hashcode = str(self.app.conn.execute_get("""SELECT hash FROM userdata WHERE mail=(%s)""",(mail,))[0][0])
+            SendMail.send(mail,hashcode)
             self.background_canvas.delete(self.message_label)
             self.message_label = self.background_canvas.create_text(111, 73,
                                                                     anchor='nw',
@@ -115,6 +120,8 @@ class Restore_window():
                                                                         weight='bold',
                                                                         slant='italic'),
                                                                     fill="#AB3131")
+
+
 
 
 class Register_menu():
@@ -264,7 +271,7 @@ class Register_menu():
             check.append(False)
 
         if all(check):
-            str2hash = self.entry_nickname.get() + self.entry_mail.get()
+            str2hash = self.entry_nickname.get() + self.entry_mail.get() + self.entry_password.get()
             hash_string = str(hashlib.md5(str2hash.encode()).hexdigest())
 
             self.app.conn.execute_insert(""" INSERT INTO userdata (nick, mail, password,hash) VALUES(%s, %s, %s, %s)""",(self.entry_nickname.get(),self.entry_mail.get(),self.entry_password.get(),hash_string))
@@ -322,7 +329,7 @@ class Login_menu():
             400.0, 200.0,
             image=self.background_img)
 
-        self.comunicat_label = canvas.create_text(0, 0, text='')
+        self.comunicat_label = self.canvas.create_text(0, 0, text='')
 
         self.entry_password = Entry_Box(self.window, self.canvas, 494, 162, 255, 45,
                                         "/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/entryBox.png", 5,
@@ -451,7 +458,7 @@ class Login_menu():
     #                                                       fill="#AB3131")
 
     def btn_forgot_clicked(self):
-        Restore_window(self.window)
+        Restore_window(self.window,self.app)
         # self.top = Toplevel(self.window,takefocus=True)
         # #self.window.withdraw()
         # #self.window.deiconify()

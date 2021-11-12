@@ -15,9 +15,6 @@ class Connect(psycopg2.extensions.connection):
         self.cursor.execute(*args)
         return self.cursor.fetchall()
 
-    def commited(self):
-        self.conn.commit()
-
     def execute_insert(self, *args):
         #print("SQL : ", sql)
         #print("arg : ", arg)

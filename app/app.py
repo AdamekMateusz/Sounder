@@ -1,5 +1,3 @@
-from tkinter import *
-import tkinter.font as font
 import os
 from functools import partial
 #from playsound import playsound
@@ -7,10 +5,8 @@ from functools import partial
 #from tkinter.ttk import *
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
-
-import time
+import hashlib
 from tkinter import font
-from threading import Thread
 from entry_box import *
 from paramiko2 import *
 from connect import *
@@ -257,7 +253,85 @@ class Playlist_Menu():
             for music in list_file:
                 print(f"{music}")
 
-
+# class Upload_Muisc():
+#     def __init__(self, window, app_interface):
+#         self.app = app_interface
+#         self.window = window
+#         self.top = Toplevel(self.window, takefocus=True)
+#         # self.window.withdraw()
+#         # self.window.deiconify()
+#         self.top.geometry("478x302")
+#         self.top.title("Upload Music")
+#         # self.top.transient(self.window)
+#         # self.window.deiconify()
+#         # self.window.transient(self.top)
+#         self.background_canvas = Canvas(
+#             self.top,
+#             bg="black",
+#             height=302,
+#             width=478,
+#             bd=0,
+#             highlightthickness=0,
+#             relief="ridge")
+#         self.background_canvas.place(x=0, y=0)
+#
+#         self.label_music_name = self.canvas.create_text(self.top, self.background_canvas,61, 122, anchor='nw', width=355, height=47,)
+#
+#
+#         self.img_cancel = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Cancel.png")
+#         self.but_cancel = Button(self.top,
+#                                  image=self.img_cancel,
+#                                  bd=0,
+#                                  borderwidth=0,
+#                                  highlightthickness=0,
+#                                  activebackground="black",
+#                                  bg="black",
+#                                  command=self.btn_cancel_clicked,
+#                                  relief='flat')
+#         self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+#
+#         self.img_open = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Restore.png")
+#         self.but_open = Button(self.top,
+#                                   image=self.img_open,
+#                                   bd=0,
+#                                   activebackground="black",
+#                                   bg="black",
+#                                   borderwidth=0,
+#                                   highlightthickness=0,
+#                                   relief='flat',
+#                                   command=self.btn_open_clicked)
+#         self.but_open_window = self.background_canvas.create_window(280, 186, window=self.but_open,
+#                                                                        anchor='nw')
+#
+#
+#         self.restore_password_label = self.background_canvas.create_text(23, 17,
+#                                                                          anchor='nw',
+#                                                                          text="Restore Password",
+#                                                                          font=font.Font(family='Ubuntu-Regular',
+#                                                                                         size=28), fill="white")
+#
+#         self.restore_mail_label = self.background_canvas.create_text(59, 103,
+#                                                                      anchor='nw',
+#                                                                      text="Mail",
+#                                                                      font=font.Font(
+#                                                                          family='Ubuntu-Regular',
+#                                                                          size=10,
+#                                                                          weight='bold',
+#                                                                          slant='italic'),
+#                                                                      fill="#3c3838")
+#
+#         self.message_label = self.background_canvas.create_text(111, 73,
+#                                                                 anchor='nw',
+#                                                                 text="",
+#                                                                 font=font.Font(
+#                                                                     family='Ubuntu-Regular',
+#                                                                     size=10,
+#                                                                     weight='bold',
+#                                                                     slant='italic'),
+#                                                                 fill="white")
+#
+#     def btn_cancel_clicked(self):
+#         self.top.destroy()
 
 class Left_menu():
     def __init__(self,frame,canvas, app_interface=None):
@@ -387,7 +461,7 @@ class Left_menu():
             fg='white',
             highlightbackground='black',
             bd=0,
-            command=self.btn_clicked,
+            command=self.btn_upload_clicked,
             relief="groove")
 
         self.btn_Upload.place(
@@ -426,6 +500,8 @@ class Left_menu():
 
     def btn_clicked(self):
         print("Button Clicked")
+
+    def btn_upload_clicked(self):
 
 
 class Play_menu():
@@ -1075,10 +1151,10 @@ class Setting_menu():
                                                               slant='roman'),
                                                           fill="#3C3838")
 
-        self.entry_new_password = Entry_Box(self.window, self.canvas, 145, 845, 445, 59, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
+        self.entry_old_password = Entry_Box(self.window, self.canvas, 145, 845, 445, 59, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
                                             5, "#3C3838")
-        self.entry_new_password.background_canvas_image()
-        self.entry_new_password.Place()
+        self.entry_old_password.background_canvas_image()
+        self.entry_old_password.Place()
 
         self.your_change_password_label = self.canvas.create_text(145, 925,
                                                           anchor='nw',
@@ -1090,10 +1166,12 @@ class Setting_menu():
                                                               slant='roman'),
                                                           fill="#3C3838")
 
-        self.entry_old_password = Entry_Box(self.window, self.canvas, 145, 951, 445, 59, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
+
+
+        self.entry_new_password = Entry_Box(self.window, self.canvas, 145, 951, 445, 59, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
                                             5, "#3C3838")
-        self.entry_old_password.background_canvas_image()
-        self.entry_old_password.Place()
+        self.entry_new_password.background_canvas_image()
+        self.entry_new_password.Place()
 
         self.your_change_password_label = self.canvas.create_text(145, 1032,
                                                           anchor='nw',
@@ -1122,6 +1200,8 @@ class Setting_menu():
                                  relief='flat')
         self.but_change_window = self.canvas.create_window(514, 1164, window=self.but_change, anchor='nw')
 
+        self.comunicat_label = self.canvas.create_text(145, 803, anchor='nw', text='')
+
         #self.myThread = Thread(target = self.get_numer_character)
         # if self.text_describeBox.focus_get():
         #     print('traktor')
@@ -1142,7 +1222,43 @@ class Setting_menu():
         #self.canvas.configure(yscrollcommand=-1)
 
     def btn_change_password_clicked(self):
-        pass
+        new_password = self.entry_new_password.get()
+        retype_new_password = self.entry_retype_password.get()
+        print('changer_pressed')
+
+        if self.entry_old_password.get() == self.app.conn.execute_get("""SELECT password FROM userdata WHERE nick=(%s)""",(self.app.nick,))[0][0]:
+            #check = [True]
+            #self.canvas.delete(self.comunicat_label)
+            if len(new_password) < 8 and len(retype_new_password) < 8:
+                self.canvas.delete(self.comunicat_label)
+                self.comunicat_label = self.canvas.create_text(145, 803, anchor='nw', text='Password is too short, Minimum 8 sign',fill="#AB3131")
+                #self.comunicat_label.config(text='Password is too short, Minimum 8 sign')
+                #check.append(False)
+            else:
+                if new_password != retype_new_password:
+                    self.canvas.delete(self.comunicat_label)
+                    self.comunicat_label = self.canvas.create_text(145, 803, anchor='nw', text='Passowrd is not the same',fill="#AB3131")
+                    #self.comunicat_label.config(text='Passowrd is not the same')
+                else:
+                    str2hash = self.app.nick + self.app.mail + new_password
+                    hash_string = str(hashlib.md5(str2hash.encode()).hexdigest())
+
+                    self.app.conn.execute_update("""UPDATE userdata SET password=(%s) WHERE nick =(%s)""",(new_password,self.app.nick))
+                    self.app.conn.execute_update("""UPDATE userdata SET hash=(%s) WHERE nick =(%s)""",(hash_string, self.app.nick))
+                    if str(self.app.conn.execute_get("""SELECT password FROM userdata WHERE nick=(%s)""", (self.app.nick,))[0][0]) == new_password:
+                        self.canvas.delete(self.comunicat_label)
+                        self.comunicat_label = self.canvas.create_text(145, 803, anchor='nw', text='Password changed succesfully',fill="#159C2B")
+                        #self.comunicat_label.config(text='Password changed succesfully')
+                    else:
+                        self.canvas.delete(self.comunicat_label)
+                        self.comunicat_label = self.canvas.create_text(145, 803, anchor='nw', text='Something goes wrong',fill="#AB3131")
+                        #self.comunicat_label.config(text='Something goes wrong')
+        else:
+            self.canvas.delete(self.comunicat_label)
+            self.comunicat_label = self.canvas.create_text(145, 803, anchor='nw',text='Wrong Password', fill="#AB3131")
+
+                    
+                    #check.append(False)
 
 
     def btn_clicked(self):
