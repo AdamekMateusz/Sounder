@@ -11,6 +11,11 @@ from entry_box import *
 from paramiko2 import *
 from connect import *
 from ssh import *
+from pydub import AudioSegment
+from utilities import Md5, SendMail
+
+
+
 
 
 
@@ -105,7 +110,7 @@ class Playlist_Menu():
             relief="ridge")
         self.background_canvas.place(x=0, y=0)
 
-        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Restore_Mail.png",
+        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Resore_Mail.png",
                                             5, "#3c3838")
         self.entry_add_playlist.background_canvas_image()
         self.entry_add_playlist.Place()
@@ -253,85 +258,196 @@ class Playlist_Menu():
             for music in list_file:
                 print(f"{music}")
 
-# class Upload_Muisc():
-#     def __init__(self, window, app_interface):
-#         self.app = app_interface
-#         self.window = window
-#         self.top = Toplevel(self.window, takefocus=True)
-#         # self.window.withdraw()
-#         # self.window.deiconify()
-#         self.top.geometry("478x302")
-#         self.top.title("Upload Music")
-#         # self.top.transient(self.window)
-#         # self.window.deiconify()
-#         # self.window.transient(self.top)
-#         self.background_canvas = Canvas(
-#             self.top,
-#             bg="black",
-#             height=302,
-#             width=478,
-#             bd=0,
-#             highlightthickness=0,
-#             relief="ridge")
-#         self.background_canvas.place(x=0, y=0)
-#
-#         self.label_music_name = self.canvas.create_text(self.top, self.background_canvas,61, 122, anchor='nw', width=355, height=47,)
-#
-#
-#         self.img_cancel = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Cancel.png")
-#         self.but_cancel = Button(self.top,
-#                                  image=self.img_cancel,
-#                                  bd=0,
-#                                  borderwidth=0,
-#                                  highlightthickness=0,
-#                                  activebackground="black",
-#                                  bg="black",
-#                                  command=self.btn_cancel_clicked,
-#                                  relief='flat')
-#         self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
-#
-#         self.img_open = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Restore.png")
-#         self.but_open = Button(self.top,
-#                                   image=self.img_open,
-#                                   bd=0,
-#                                   activebackground="black",
-#                                   bg="black",
-#                                   borderwidth=0,
-#                                   highlightthickness=0,
-#                                   relief='flat',
-#                                   command=self.btn_open_clicked)
-#         self.but_open_window = self.background_canvas.create_window(280, 186, window=self.but_open,
-#                                                                        anchor='nw')
-#
-#
-#         self.restore_password_label = self.background_canvas.create_text(23, 17,
-#                                                                          anchor='nw',
-#                                                                          text="Restore Password",
-#                                                                          font=font.Font(family='Ubuntu-Regular',
-#                                                                                         size=28), fill="white")
-#
-#         self.restore_mail_label = self.background_canvas.create_text(59, 103,
-#                                                                      anchor='nw',
-#                                                                      text="Mail",
-#                                                                      font=font.Font(
-#                                                                          family='Ubuntu-Regular',
-#                                                                          size=10,
-#                                                                          weight='bold',
-#                                                                          slant='italic'),
-#                                                                      fill="#3c3838")
-#
-#         self.message_label = self.background_canvas.create_text(111, 73,
-#                                                                 anchor='nw',
-#                                                                 text="",
-#                                                                 font=font.Font(
-#                                                                     family='Ubuntu-Regular',
-#                                                                     size=10,
-#                                                                     weight='bold',
-#                                                                     slant='italic'),
-#                                                                 fill="white")
-#
-#     def btn_cancel_clicked(self):
-#         self.top.destroy()
+#tutaj ewentualnie dodac to window
+class Upload_Muisc():
+    def __init__(self, window, app_interface):
+        self.app = app_interface
+        #self.window = window
+        self.top =Toplevel()
+        #self.top = Toplevel(self.window, takefocus=True)
+        self.filename = None
+        # self.window.withdraw()
+        # self.window.deiconify()
+        self.top.geometry("478x302")
+        self.top.title("Upload Music")
+        # self.top.transient(self.window)
+        # self.window.deiconify()
+        # self.window.transient(self.top)
+        self.background_canvas = Canvas(
+            self.top,
+            bg="black",
+            height=302,
+            width=478,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.background_canvas.place(x=0, y=0)
+
+        self.label_music_name = self.background_canvas.create_text(61, 122, anchor='nw',text="")
+
+
+        self.img_cancel = PhotoImage(file=f"image/cancel.png")
+        self.but_cancel = Button(self.top,
+                                 image=self.img_cancel,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 command=self.btn_cancel_clicked,
+                                 relief='flat')
+        self.but_cancel_window = self.background_canvas.create_window(349, 247, window=self.but_cancel, anchor='nw')
+
+        self.img_open = PhotoImage(file=f"image/open.png")
+        self.but_open = Button(self.top,
+                                  image=self.img_open,
+                                  bd=0,
+                                  activebackground="black",
+                                  bg="black",
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  relief='flat',
+                                  command=self.btn_open_clicekd)
+        self.but_open_window = self.background_canvas.create_window(59, 247, window=self.but_open,
+                                                                       anchor='nw')
+
+        self.img_send = PhotoImage(file=f"image/send.png")
+        self.but_send = Button(self.top,
+                                  image=self.img_send,
+                                  bd=0,
+                                  activebackground="black",
+                                  bg="black",
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  relief='flat',
+                                  command=self.btn_send_clicked)
+        self.but_send_window = self.background_canvas.create_window(201, 247, window=self.but_send,
+                                                                       anchor='nw')
+
+
+        self.upload_label = self.background_canvas.create_text(23, 17,
+                                                                         anchor='nw',
+                                                                         text="Upload Muisc",
+                                                                         font=font.Font(family='Ubuntu-Regular',
+                                                                                        size=28), fill="white")
+
+        self.message_label = self.background_canvas.create_text(59, 127,
+                                                                anchor='nw',
+                                                                text='',
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=14,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+    def select_files(self):
+        filetypes = (
+            ('mp3', '*.mp3'),
+            ('wav', '*.wav')
+        )
+
+        filenames = fd.askopenfilenames(
+            title='Open audio files',
+            initialdir='~/dwhelper/ROCK',
+            filetypes=filetypes)
+
+        self.filename = filenames
+        return filenames
+
+    def btn_open_clicekd(self):
+        self.select_files()
+        if self.filename is not None:
+            path_file = str(self.filename[0])
+            path_dir = os.path.dirname(path_file)
+            filename = path_file.replace(path_dir,'')
+            filename = filename.replace('/','')
+
+            self.background_canvas.delete(self.message_label)
+            self.message_label = self.background_canvas.create_text(59, 127,
+                                                                    anchor='nw',
+                                                                    text=filename,
+                                                                    font=font.Font(
+                                                                        family='Ubuntu-Regular',
+                                                                        size=14,
+                                                                        weight='bold',
+                                                                        slant='italic'),
+                                                                    fill="white")
+            print(path_file)
+            if path_file.endswith(".mp3"):
+                sound = AudioSegment.from_mp3(path_file)
+                self.path_wav = path_file[:-3] + 'wav'
+                sound.export(self.path_wav, format="wav")
+                self.filename_convert = filename[:-3]+'wav'
+                print(self.filename_convert)
+            elif path_file.endswith(".wav"):
+                self.path_wav = str(path_file)
+            else:
+                print('cannot convert to wav file')
+
+            self.md5sum_track = Md5.md5sum_file(self.path_wav)
+            print(self.md5sum_track)
+
+
+        else:
+            self.message_label.configure("Do not chooise file, try again")
+
+
+
+    def btn_send_clicked(self):
+        self.background_canvas.delete(self.message_label)
+        self.message_warn_label = self.background_canvas.create_text(59, 100,
+                                                                anchor='nw',
+                                                                text="Wait for moment",
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=10,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+        time.sleep(2)
+        ssh = SSH()
+        ssh_session = ssh.connect()
+        scp = ssh.scp_client(ssh_session)
+        remote_path = os.path.join('/home/pi/app/Users',self.app.nick,'MY_MUSIC')
+        scp.put(self.path_wav, remote_path=remote_path)
+        scp.close()
+
+        filepath_server = os.path.join(remote_path,self.filename_convert)
+        print(filepath_server)
+        # stdin, stdout, stderr = self.app.session.exec_command(f"md5sum {filepath_server}")
+        ssh2 = SSH()
+        ssh2_session = ssh2.connect()
+        stdin, stdout, stderr = ssh2_session.exec_command(f"md5sum {filepath_server}")
+        out = string = stdout.read().decode('ascii').strip("\n")
+        if isinstance(out,str):
+            if len(out) >= 32:
+                out = out[:32]
+            #dodac nalezy handlowanie
+
+
+        if self.md5sum_track == out:
+            self.background_canvas.delete(self.message_warn_label)
+            self.message_warn_label = self.background_canvas.create_text(59, 100,
+                                                                         anchor='nw',
+                                                                         text="Upload correctly, close window",
+                                                                         font=font.Font(
+                                                                             family='Ubuntu-Regular',
+                                                                             size=10,
+                                                                             weight='bold',
+                                                                             slant='italic'),
+                                                                         fill="white")
+            #self.app.conn.execute_update("""INSERT INTO userdata (my_music) VALUES ((%s) WHERE nick=(%s))""",(filepath_server,self.app.nick))
+            #tutaj w my_music trzab stworzy cdruga tabelke
+            self.app.conn.execute_update("""INSERT INTO my_music (track_name, track_path,user_id) VALUES (%s, %s,%s)""",(self.filename_convert,filepath_server,self.app.user_id))
+            os.remove(self.path_wav)
+            #select * from my_music where user_id=(select id from userdata where nick='sounder')
+
+
+
+
+
+    def btn_cancel_clicked(self):
+        self.top.destroy()
 
 class Left_menu():
     def __init__(self,frame,canvas, app_interface=None):
@@ -355,7 +471,7 @@ class Left_menu():
         self.playlist_frame_canvas.place(x=0, y=0)
 
 
-        self.playlist_menu = Playlist_Menu(self.playlist_frame, self.playlist_frame_canvas)
+        self.playlist_menu = Playlist_Menu(self.playlist_frame, self.playlist_frame_canvas,self.app)
 
 
 
@@ -389,7 +505,7 @@ class Left_menu():
             fg='white',
             highlightbackground='black',
             bd=0,
-            command=self.btn_clicked,
+            command=self.btn_my_music_clicked,
             relief="groove")
 
         self.btn_myMusic.place(
@@ -497,12 +613,17 @@ class Left_menu():
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
 
-
+    def btn_my_music_clicked(self):
+        my_music = self.app.conn.execute_get("""SELECT * FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
+        self.my_music_dict = {}
+        for item in my_music:
+            self.my_music_dict.update({item[2]:{'track_id':item[0],'user_id':item[1],'track_path':item[3]}})
+        print(self.my_music_dict)
     def btn_clicked(self):
         print("Button Clicked")
 
     def btn_upload_clicked(self):
-
+        Upload_Muisc(self.window,self.app)
 
 class Play_menu():
     def __init__(self,frame, canvas, app_interface=None):
@@ -608,7 +729,7 @@ class Play_menu():
         print('clicked button')
 
     def btn_share_clicked(self):
-        self.top = Toplevel(self.window, takefocus=True)
+        self.top = Toplevel( takefocus=True)
         self.top.geometry("478x302")
         self.top.title("Share Music")
         self.background_canvas = Canvas(
@@ -745,11 +866,12 @@ class Content_search():
         # app.content.content_search.__del__()
         # app.content.content_play.__del__()
         self.app.content.__del__()
-        self.app.setting.__init__(self.app.contentframe, self.app.contentframe_canvas,self.app)
+        self.app.setting.__init__(self.app.contentframe, self.app.contentframe_canvas, self.app)
+
     def __del__(self):
+
         # self.canvas.delete("all")
         # self.entry_search.Destroy()
-        # pass
         pass
 
     def entry_search_focus(self, event):
@@ -759,6 +881,7 @@ class Content_search():
 
 class Content_play():
     def __init__(self,frame, canvas, app_interface=None, content_menu=None):
+        self.app = app_interface
         self.content_menu = content_menu
         self.window = frame
         self.canvas = canvas
@@ -807,7 +930,7 @@ class Content_play():
                                                                width=1157 - int(self.vertibar['width']), height=38)
 
         self.podstwowy = Button(self.window, image=self.img_track_pause, command = self.btn_podstawowy_clicked)
-        self.canvas.create_window(0,0, anchor='nw', window= self.podstwowy)
+        self.canvas.create_window(40,40, anchor='nw', window= self.podstwowy)
 
     def play_local(self):
         self.play_local_pid = os.system("python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/client2.py")
@@ -817,7 +940,8 @@ class Content_play():
         self.btn_track_play.configure(image= self.img_track_pause)
         
         self.tt =Thread(target=self.play).start()
-        time.sleep(0.5)
+        #time.sleep(0.5)
+        time.sleep(1)
         self.mm = Thread(target=self.play_local).start()
     def play(self):
 
@@ -908,7 +1032,8 @@ class Content_menu():
             highlightthickness=0,
             relief="ridge")
         self.content_play_canvas.place(x=0, y=0)
-
+        #on tu tworzy now ainstacje tego za kazdym razem jak wyjdziemy z Setting menu , a my mamy sie wrocic do starej
+        #w App interaface trzeb autworzyc tego instancje i tutu wywlaoc
         self.content_search = Content_search(self.content_search_frame, self.content_search_canvas,self.app)
         self.content_play = Content_play(self.content_play_frame, self.content_play_canvas,self.app)
 
@@ -1353,9 +1478,7 @@ class App_Interface():
         self.session = ssh.connect()
         self.user_update()
 
-        print(self.mail)
-        print(self.nick)
-
+        self.playlist = []
         self.leftframe = Frame(self.window, bg='black', relief='flat')
         self.leftframe.place(
             x=0,
@@ -1416,8 +1539,10 @@ class App_Interface():
     def user_update(self):
         if self.mail == None:
             self.mail = str(self.conn.execute_get("""SELECT mail FROM userdata WHERE nick=(%s)""", (self.nick,))[0][0])
+            self.user_id = int(self.conn.execute_get("""SELECT id FROM userdata WHERE nick=(%s)""", (self.nick,))[0][0])
         if self.nick == None:
             self.nick = str(self.conn.execute_get("""SELECT nick FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
+            self.user_id = int(self.conn.execute_get("""SELECT id FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
 
 
 

@@ -289,6 +289,9 @@ class Register_menu():
             self.app.session.exec_command(f'mkdir {os.path.join(self.user_path, self.dir_FAVOURITE)}')
 
 
+            #self.app.execute_insert("CREATE TABLE")
+
+
             self.canvas.delete(self.comunicat_label)
             self.comunicat_label = self.canvas.create_text(491, 12, text='Succesfully registrated', fill="#159C2B")
 

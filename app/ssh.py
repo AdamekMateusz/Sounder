@@ -53,11 +53,13 @@ class SSH():
 #         time.sleep(1)
 
 
+"""
 if __name__ == "__main__":
     ssh = SSH()
     ssh_session = ssh.connect()
     scp = ssh.scp_client(ssh_session)
     scp.put("/home/mateusz/2021_03_02_11_16_35.mkv", remote_path='/home/pi')
+"""
 
 
     # upload = Thread(target=uploading(scp)).start()
@@ -68,4 +70,4 @@ if __name__ == "__main__":
     # Should now be printing the current progress of your put function.
     #print('slon')
     #print(scp.progress)
-    scp.close()
+    #scp.close()
