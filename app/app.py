@@ -77,12 +77,16 @@ class Playlist_Menu():
             width=30,
             height=30)
 
+        self.render_playlist_button()
         # self.btn1= Button(self.window,text ='btn1')
         # self.canvas.create_window(0,60,anchor='nw',window=self.btn1)
         #
         # self.btn2= Button(self.window,text ='btn2')
         # self.canvas.create_window(0,600,anchor='nw',window=self.btn2)
 
+    def render_playlist_button(self):
+        for item in self.app.playlist:
+            self.create_playlist_button(item)
 
 
     def btn_nickname_clicked(self):
@@ -173,12 +177,12 @@ class Playlist_Menu():
     def btn_cancel_clicked(self):
         self.top.destroy()
 
-    def create_playlist(self,dir_name):
-
-        path = os.path.join(self.playlist_path,dir_name)
-
-        if not os.path.exists(path):
-            os.makedirs(path)
+    # def create_playlist(self,dir_name):
+    #
+    #     path = os.path.join(self.playlist_path,dir_name)
+    #
+    #     if not os.path.exists(path):
+    #         os.makedirs(path)
 
 
 
@@ -221,42 +225,69 @@ class Playlist_Menu():
                                                                     fill="#AB3131")
         else:
             self.background_canvas.delete(self.message_label)
+            self.app.conn.execute_update("""INSERT INTO playlist (playlist_name,user_id) VALUES (%s, %s)""",(self.entry_add_playlist.get(),self.app.user_id) )
             self.app.playlist.append(self.entry_add_playlist.get())
+
+            self.create_playlist_button(self.entry_add_playlist.get())
             temp_label = str(self.entry_add_playlist.get())
-            self.temp_button = Button(self.window,
-                               text=self.entry_add_playlist.get(),
-                               activebackground="green",
-                               bg="black",
-                               fg='white',
-                               highlightbackground='black',
-                               bd=0,
-                               command=partial(self.btn_playlist_press,len(self.button_identities)),
-                               relief="groove")
-
-            self.canvas.create_window(0,self.app.left.playlist_menu.last_postion, width=283 - int(self.vertibar['width']), height=47,anchor='nw',window=self.temp_button)
-            self.canvas.config(scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])+self.last_postion))
-            print(type(self.temp_button))
-            self.button_identities.append(self.temp_button)
-
-            self.app.left.playlist_menu.last_postion = self.app.left.playlist_menu.last_postion + 47
+            # self.temp_button = Button(self.window,
+            #                    text=self.entry_add_playlist.get(),
+            #                    activebackground="green",
+            #                    bg="black",
+            #                    fg='white',
+            #                    highlightbackground='black',
+            #                    bd=0,
+            #                    command=partial(self.btn_playlist_press,len(self.button_identities)),
+            #                    relief="groove")
+            #
+            # self.canvas.create_window(0,self.app.left.playlist_menu.last_postion, width=283 - int(self.vertibar['width']), height=47,anchor='nw',window=self.temp_button)
+            # self.canvas.config(scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])+self.last_postion))
+            # print(type(self.temp_button))
+            # self.button_identities.append(self.temp_button)
+            #
+            # self.app.left.playlist_menu.last_postion = self.app.left.playlist_menu.last_postion + 47
             self.top.destroy()
             self.background_canvas.destroy()
 
-            self.create_playlist(temp_label)
+            # self.create_playlist(temp_label)
 
     def btn_playlist_press(self,n):
-        #global button_identities
         self.bname = self.button_identities[n]
         print(type(self.bname))
         # print('Button', n)
         playlist_name = self.bname['text']
-        music_path = os.path.join(self.playlist_path, playlist_name)
-        if os.path.exists(music_path):
-            list_file = os.listdir(music_path)
-            list_file = [extension for extension in list_file if extension.endswith(".mp3")]
 
-            for music in list_file:
-                print(f"{music}")
+        list_of_track = self.app.conn.execute_get("""SELECT * FROM playlist_content WHERE playlist_id = (SELECT id FROM playlist WHERE playlist_name=(%s))""",(playlist_name,))
+        print(list_of_track)
+
+        # music_path = os.path.join(self.playlist_path, playlist_name)
+        # if os.path.exists(music_path):
+        #     list_file = os.listdir(music_path)
+        #     list_file = [extension for extension in list_file if extension.endswith(".mp3")]
+        #
+        #     for music in list_file:
+        #         print(f"{music}")
+
+    def create_playlist_button(self,button_name):
+        self.temp_button = Button(self.window,
+                                  text=button_name,
+                                  activebackground="green",
+                                  bg="black",
+                                  fg='white',
+                                  highlightbackground='black',
+                                  bd=0,
+                                  command=partial(self.btn_playlist_press, len(self.button_identities)),
+                                  relief="groove")
+
+        self.canvas.create_window(0, self.last_postion, width=283 - int(self.vertibar['width']),
+                                  height=47, anchor='nw', window=self.temp_button)
+        self.canvas.config(
+            scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + self.last_postion))
+        print(type(self.temp_button))
+        self.button_identities.append(self.temp_button)
+
+        self.last_postion = self.last_postion + 47
+
 
 #tutaj ewentualnie dodac to window
 class Upload_Muisc():
@@ -487,7 +518,7 @@ class Left_menu():
             fg='white',
             highlightbackground='black',
             bd=0,
-            command=self.btn_clicked,
+            command=self.btn_all_music_clicked,
             relief="groove")
 
         self.btn_allMusic.place(
@@ -513,38 +544,38 @@ class Left_menu():
             width = 283,
             height = 47)
 
-        self.img_shareDown= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/shareDOWN.png")
-        self.btn_shareDown = Button(
-            text="MY Sharing"+18*" ",
+        self.img_sharing_me= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/shareDOWN.png")
+        self.btn_sharing_me = Button(
+            text="Sharing ME"+18*" ",
             compound='right',
-            image=self.img_shareDown,
+            image=self.img_sharing_me,
             activebackground="green",
             bg="black",
             fg='white',
             highlightbackground='black',
             bd=0,
-            command=self.btn_clicked,
+            command=self.btn_sharing_me_clicked,
             relief="groove")
 
-        self.btn_shareDown.place(
+        self.btn_sharing_me.place(
             x = 0, y = 198,
             width = 283,
             height = 47)
 
-        self.img_shareUP= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/shareUP.png")
-        self.btn_shareUP = Button(
-            text="Sharing ME"+18*" ",
+        self.img_my_sharing= PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/shareUP.png")
+        self.btn_my_sharing = Button(
+            text="MY Sharing" + 18 * " ",
             compound='right',
-            image=self.img_shareUP,
+            image=self.img_my_sharing,
             activebackground="green",
             bg="black",
             fg='white',
             highlightbackground='black',
             bd=0,
-            command=self.btn_clicked,
+            command=self.btn_my_sharing_clicked,
             relief="groove")
 
-        self.btn_shareUP.place(
+        self.btn_my_sharing.place(
             x = 0, y = 245,
             width = 283,
             height = 47)
@@ -559,7 +590,7 @@ class Left_menu():
             fg='white',
             highlightbackground='black',
             bd=0,
-            command=self.btn_clicked,
+            command=self.favourite_clicked,
             relief="groove")
 
         self.btn_Favourite.place(
@@ -605,6 +636,7 @@ class Left_menu():
                                  highlightthickness=0, anchor="w")
         self.button_nickname.place(x=79,y=46,width=150,height=25)
 
+
     def btn_nickname_clicked(self):
         #content
         self.app.content.__del__()
@@ -613,12 +645,40 @@ class Left_menu():
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
 
+    def btn_all_music_clicked(self):
+        all_music = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
+        all_music.extend(self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s)""",(self.app.nick,)))
+        print(all_music)
+
     def btn_my_music_clicked(self):
-        my_music = self.app.conn.execute_get("""SELECT * FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
-        self.my_music_dict = {}
+        my_music = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
+        # self.my_music_dict = {}
+        # for item in my_music:
+        #     self.my_music_dict.update({item[2]:{'track_id':item[0],'user_id':item[1],'track_path':item[3]}})
+        # print(self.my_music_dict)
+        #print(my_music)
         for item in my_music:
-            self.my_music_dict.update({item[2]:{'track_id':item[0],'user_id':item[1],'track_path':item[3]}})
-        print(self.my_music_dict)
+            self.app.my_music.append(str(item[0]))
+        print(self.app.my_music)
+
+    def btn_my_sharing_clicked(self):
+        my_sharing = self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE user_id=(SELECT id FROM userdata WHERE nick=(%s))""",(self.app.nick,))
+        print(my_sharing)
+        for item in my_sharing:
+            self.app.my_sharing.append(str(item[0]))
+
+    def btn_sharing_me_clicked(self):
+        sharing_me = self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s)""",(self.app.nick,))
+        print(sharing_me)
+        for item in sharing_me:
+            self.app.sharing_me.append(str(item[0]))
+
+    def favourite_clicked(self):
+        favourite = self.app.conn.execute_get("SELECT track_name FROM favourite WHERE user_id=(%s)",(self.app.user_id,))
+        print(favourite)
+        for item in favourite:
+            self.app.favourite.append(str(item[0]))
+
     def btn_clicked(self):
         print("Button Clicked")
 
@@ -709,7 +769,7 @@ class Play_menu():
                                highlightthickness=0,
                                activebackground=self.canvas['bg'],
                                bg=self.canvas['bg'],
-                               command=self.btn_clicked,
+                               command=self.btn_favourite_clicked,
                                relief='flat')
         self.but_favourite_window = self.canvas.create_window(1304, 46, width=30, height=30, window=self.but_favourite,anchor='nw')
 
@@ -727,6 +787,9 @@ class Play_menu():
 
     def btn_clicked(self):
         print('clicked button')
+
+    def btn_favourite_clicked(self):
+        pass
 
     def btn_share_clicked(self):
         self.top = Toplevel( takefocus=True)
@@ -1467,8 +1530,6 @@ class App_Interface():
     def __init__(self,window,nick,mail):
         self.window = window
 
-        self.playlist = []
-        # button_identities = []
 
         self.nick = nick
         self.mail = mail
@@ -1477,8 +1538,16 @@ class App_Interface():
         ssh = SSH()
         self.session = ssh.connect()
         self.user_update()
-
         self.playlist = []
+        self.get_playlist()
+
+        self.all_music = []
+        self.my_music = []
+        self.my_sharing = []
+        self.sharing_me = []
+        self.favourite = []
+
+        print(self.playlist)
         self.leftframe = Frame(self.window, bg='black', relief='flat')
         self.leftframe.place(
             x=0,
@@ -1544,6 +1613,10 @@ class App_Interface():
             self.nick = str(self.conn.execute_get("""SELECT nick FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
             self.user_id = int(self.conn.execute_get("""SELECT id FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
 
+    def get_playlist(self):
+        playlist_parametr =  self.conn.execute_get("""SELECT playlist_name FROM playlist WHERE user_id=(%s)""",(self.user_id,))
+        for item in playlist_parametr:
+            self.playlist.append(str(item[0]))
 
 
 
