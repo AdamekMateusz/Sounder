@@ -1093,7 +1093,22 @@ class Content_play():
         print(type(self.bname))
         # print('Button', n)
         button_name = self.bname['text']
+        #get_play_path = \
+        if int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id =(%s)""",(button_name,self.app.user_id))[0][0]) == 1:
+            get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE track_name=(%s)""",(button_name,))
+        elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id = (%s)""",(button_name,self.app.user_id))[0][0]) == 0:
+            if int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))[0][0]) == 1:
+                get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))
+            elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))) > 1:
+                get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name, self.app.nick))
+                get_play_path = get_play_path[0]
+            else:
+                print('Cannot find track')
+                return None
+
+        print(get_play_path)
         print(button_name)
+        #TUTAJ NALEZY WYWOLAC PLAY STRAMING funkcje
 
     def create_button(self,button_name):
         self.temp_button = Button(self.window,
