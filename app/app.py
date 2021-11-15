@@ -1030,7 +1030,7 @@ class Content_play():
                                                                width=1157 - int(self.vertibar['width']), height=38)
 
         self.podstwowy = Button(self.window, image=self.img_track_pause, command = self.btn_podstawowy_clicked)
-        self.canvas.create_window(40,40, anchor='nw', window= self.podstwowy)
+        self.canvas.create_window(40,400, anchor='nw', window= self.podstwowy)
 
     def play_local(self):
         self.play_local_pid = os.system("python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/client2.py")
@@ -1047,40 +1047,41 @@ class Content_play():
 
         self.conn = Connection(host='192.168.1.4')
         time.sleep(0.01)
-        print(self.conn.ssh_run_remote_command('python3 ~/app/server2.py'))
+        print(self.conn.ssh_run_remote_command(f'python3 ~/app/server2.py {self.track_play}'))
         print('musztarda')
         self.play_label_press = True
 
             #self.conn.close()
 
-    def btn_track_clicked(self):
-        print("label track clicked")
-        #print(self.btn_track_play['image'])
-
-        if self.play_label_press == False:
-            x = Thread(target=self.play)
-            x.start()
-            #os.system('python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/paramiko2.py')
-            print('slon')
-            #os.system('python3 /home/mateusz/PycharmProjects/TkinterProj/inz/client2.py')
-            self.play_label_press = True
-        else:
-            self.play_label_press = False
-            #self.conn.close()
-
-
-
-        if self.btn_track_play['image'] == "pyimage13":
-            self.btn_track_play.config(image=self.img_track_pause)
-            # playsound(os.path.join("/home/mateusz/dwhelper/ROCK",str(self.btn_track_play['text'])))
-            print('piuropusz')
-        else:
-            self.btn_track_play.config(image=self.img_track_play)
-            print('balwan')
+    # def btn_track_clicked(self):
+    #     print("label track clicked")
+    #     #print(self.btn_track_play['image'])
+    #
+    #     if self.play_label_press == False:
+    #         x = Thread(target=self.play)
+    #         x.start()
+    #         #os.system('python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/paramiko2.py')
+    #         print('slon')
+    #         #os.system('python3 /home/mateusz/PycharmProjects/TkinterProj/inz/client2.py')
+    #         self.play_label_press = True
+    #     else:
+    #         self.play_label_press = False
+    #         #self.conn.close()
+    #
+    #
+    #
+    #     if self.btn_track_play['image'] == "pyimage13":
+    #         self.btn_track_play.config(image=self.img_track_pause)
+    #         # playsound(os.path.join("/home/mateusz/dwhelper/ROCK",str(self.btn_track_play['text'])))
+    #         print('piuropusz')
+    #     else:
+    #         self.btn_track_play.config(image=self.img_track_play)
+    #         print('balwan')
 
     def btn_podstawowy_clicked(self):
         print('Content_paly pressed button')
         self.btn_track_play.configure(image=self.img_track_pause)
+        #kill -9 $(ps aux |grep -i client2|gawk '{if ($8 == "Sl+") {print $2}}')
         os.system('pkill -9 client2.py')
         self.conn.exit_stream()
         if self.tt is not None:
@@ -1105,9 +1106,11 @@ class Content_play():
             else:
                 print('Cannot find track')
                 return None
-
+        get_play_path = get_play_path[0][0]
         print(get_play_path)
         print(button_name)
+        self.track_play = get_play_path
+        self.thread()
         #TUTAJ NALEZY WYWOLAC PLAY STRAMING funkcje
 
     def create_button(self,button_name):
