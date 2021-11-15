@@ -649,6 +649,13 @@ class Left_menu():
         all_music = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
         all_music.extend(self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s)""",(self.app.nick,)))
         print(all_music)
+        for item in all_music:
+            if not str(item[0]) in self.app.all_music:
+                self.app.all_music.append(str(item[0]))
+        self.app.content.content_play.canvas.delete('all')
+        self.app.content.content_play.last_postion = 0
+        self.app.content.content_play.render_button(self.app.all_music)
+        #tutja to sie zobaczy czy to tak bedzie dzialac
 
     def btn_my_music_clicked(self):
         my_music = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
@@ -658,26 +665,43 @@ class Left_menu():
         # print(self.my_music_dict)
         #print(my_music)
         for item in my_music:
-            self.app.my_music.append(str(item[0]))
-        print(self.app.my_music)
+            if not str(item[0]) in self.app.my_music:
+                self.app.my_music.append(str(item[0]))
+        #print(self.app.my_music)
+        self.app.content.content_play.canvas.delete('all')
+        self.app.content.content_play.last_postion = 0
+        self.app.content.content_play.render_button(self.app.my_music)
 
     def btn_my_sharing_clicked(self):
         my_sharing = self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE user_id=(SELECT id FROM userdata WHERE nick=(%s))""",(self.app.nick,))
         print(my_sharing)
         for item in my_sharing:
-            self.app.my_sharing.append(str(item[0]))
+            if not str(item[0]) in self.app.my_sharing:
+                self.app.my_sharing.append(str(item[0]))
+
+        self.app.content.content_play.canvas.delete('all')
+        self.app.content.content_play.last_postion = 0
+        self.app.content.content_play.render_button(self.app.my_sharing)
 
     def btn_sharing_me_clicked(self):
         sharing_me = self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s)""",(self.app.nick,))
         print(sharing_me)
         for item in sharing_me:
-            self.app.sharing_me.append(str(item[0]))
+            if not str(item[0]) in self.app.sharing_me:
+                self.app.sharing_me.append(str(item[0]))
+        self.app.content.content_play.canvas.delete('all')
+        self.app.content.content_play.last_postion = 0
+        self.app.content.content_play.render_button(self.app.sharing_me)
 
     def favourite_clicked(self):
         favourite = self.app.conn.execute_get("SELECT track_name FROM favourite WHERE user_id=(%s)",(self.app.user_id,))
         print(favourite)
         for item in favourite:
-            self.app.favourite.append(str(item[0]))
+            if not str(item[0]) in self.app.favourite:
+                self.app.favourite.append(str(item[0]))
+        self.app.content.content_play.canvas.delete('all')
+        self.app.content.content_play.last_postion = 0
+        self.app.content.content_play.render_button(self.app.favourite)
 
     def btn_clicked(self):
         print("Button Clicked")
@@ -938,7 +962,17 @@ class Content_search():
         pass
 
     def entry_search_focus(self, event):
-        print('pressed Enter')
+        keyword = str(self.entry_search.get())
+        keyword ='%' + keyword + '%'
+        findall_track = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s) and track_name ILIKE (%s)""",(self.app.user_id, keyword))
+        findall_track.extend(self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s) and track_name ILIKE (%s)""", (self.app.nick, keyword)))
+
+        self.app.findall_track.clear()
+        for item in findall_track:
+            self.app.findall_track.append(str(item[0]))
+        self.app.content.content_play.canvas.delete('all')
+        self.app.content.content_play.last_postion = 0
+        self.app.content.content_play.render_button(self.app.findall_track)
 
 
 
@@ -948,6 +982,9 @@ class Content_play():
         self.content_menu = content_menu
         self.window = frame
         self.canvas = canvas
+
+        self.last_postion = 0
+        self.button_identities = []
         self.play_label_press = False
 
         self.last_record_position = 75
@@ -1049,10 +1086,47 @@ class Content_play():
         if self.tt is not None:
             self.tt.join()
 
+##################################################3
 
+    def btn_press(self,n):
+        self.bname = self.button_identities[n]
+        print(type(self.bname))
+        # print('Button', n)
+        button_name = self.bname['text']
+        print(button_name)
+
+    def create_button(self,button_name):
+        self.temp_button = Button(self.window,
+                                  text=button_name,
+                                  activebackground="green",
+                                  compound='left',
+                                  image=self.img_track_play,
+                                  anchor = 'w',
+                                  bg="black",
+                                  fg='white',
+                                  highlightbackground='black',
+                                  bd=0,
+                                  command=partial(self.btn_press, len(self.button_identities)),
+                                  relief="groove")
+
+        self.canvas.create_window(0, self.last_postion, width=1157 - int(self.vertibar['width']),
+                                  height=38, anchor='nw', window=self.temp_button)
+        self.canvas.config(
+            scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + self.last_postion))
+        print(type(self.temp_button))
+        self.button_identities.append(self.temp_button)
+
+        self.last_postion = self.last_postion + 38
+
+    def render_button(self,button_list):
+        for item in button_list:
+            self.create_button(item)
+
+#######################################################################################################
 
     def __del__(self):
         self.vertibar.destroy()
+        self.button_identities.clear()
 
 
 
@@ -1546,6 +1620,7 @@ class App_Interface():
         self.my_sharing = []
         self.sharing_me = []
         self.favourite = []
+        self.findall_track = []
 
         print(self.playlist)
         self.leftframe = Frame(self.window, bg='black', relief='flat')
