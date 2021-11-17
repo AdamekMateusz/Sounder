@@ -1,5 +1,6 @@
 import socket
 import threading, wave, pyaudio, time, queue
+import sys
 
 ClientSocket = socket.socket()
 host = '192.168.1.4'
@@ -16,6 +17,7 @@ def audio_stream_UDP():
         ClientSocket.connect((host, port))
     except socket.error as e:
         print(str(e))
+    #ClientSocket.send(str.encode(track_name),(host, port))
 
     p = pyaudio.PyAudio()
     CHUNK = 10 * 1024
@@ -26,8 +28,13 @@ def audio_stream_UDP():
                     frames_per_buffer=CHUNK)
 
     # create socket
-    message = b'Hello'
+    # message = b'Hello'
+    # ClientSocket.sendto(message, (host, port))
+    #message = b'Golden_Life_Oprocz.wav'
+    message = sys.argv[1]
+    message = str.encode(message)
     ClientSocket.sendto(message, (host, port))
+
     socket_address = (host, port)
 
     def getAudioData():
