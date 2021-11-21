@@ -1,5 +1,5 @@
 import socket
-import threading, wave, pyaudio, time, queue
+import threading, wave, pyaudio, time, queue,os
 import sys
 
 ClientSocket = socket.socket()
@@ -11,6 +11,7 @@ q = queue.Queue(maxsize=2000)
 
 def audio_stream_UDP():
     BUFF_SIZE = 65536
+
 
     print('Waiting for connection')
     try:
@@ -43,13 +44,45 @@ def audio_stream_UDP():
             q.put(frame)
             print('Queue size...', q.qsize())
 
+
     t1 = threading.Thread(target=getAudioData, args=())
     t1.start()
-    time.sleep(5)
-    print('Now Playing...')
+    time.sleep(0.5)
+    # print('Now Playing...')
     while True:
         frame = q.get()
+        #print(q.get())
         stream.write(frame)
+        # print(type(frame))
+        # print('pingwin')
+        # print(len(frame))
+        # print('borsuk')
+        # print(len(frame))
+        if len(frame) == 0:
+            break
+        # if q.qsize() == 0:
+        #     q.join()
+        #     break
+        # if q.qsize() == 0 and len(frame) < 1:
+        #     #time.sleep(1)
+        #     print('wielblad')
+        #     print(len(frame))
+        #     print('borsuk')
+        #     print('krolik')
+        #     print(q.qsize())
+        #     print("zaba")
+        #     break
+
+            # break
+            # print(frame)
+            # print(len(frame))
+            # if frame.decode('utf-8') == '':
+            #     break
+        #     print('slon')
+        #     # t1.join()
+        #     # print('True')
+        #     # return True
+        #     break
 
     ClientSocket.close()
     print('Audio closed')

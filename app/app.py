@@ -722,8 +722,9 @@ class Play_menu():
         # self.play_button.place(x=712,y=47,width=15.11, height =18.39)
         self.img_music =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/msuic.png")
         self.music_window = self.canvas.create_image(23,18, anchor='nw', image=self.img_music)
+        self.text_labelmusic = self.canvas.create_text(122, 18, anchor='nw', text='', fill='white',font=font.Font(family='Ubuntu-Regular',
+                                                                                    size=14))
 
-        self.text_labelmusic = self.canvas.create_text(122,18, anchor='nw', text="T.Love - King [Official Music Video] - YouTube.mp3",fill='white')
 
         self.img_play_once =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/play_once.png")
         self.but_play_once = Button(self.window,
@@ -745,13 +746,17 @@ class Play_menu():
                                   highlightthickness=0,
                                   activebackground=self.canvas['bg'],
                                   bg=self.canvas['bg'],
-                                  command=self.btn_clicked,
+                                  command=self.but_previous_clicked,
                                   relief='flat')
         self.but_previous_window = self.canvas.create_window(664, 46,width=30, height=30, window=self.but_previous, anchor='nw')
 
-        self.img_play =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/play.png")
+        self.img_track_pause = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/pause_label.png")
+        self.img_track_play = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/play_label.png")
+
         self.but_play = Button(self.window,
-                                  image=self.img_play,
+                                  image=self.img_track_play,
                                   bd=0,
                                   borderwidth=0,
                                   highlightthickness=0,
@@ -769,7 +774,7 @@ class Play_menu():
                                highlightthickness=0,
                                activebackground=self.canvas['bg'],
                                bg=self.canvas['bg'],
-                               command=self.btn_clicked,
+                               command=self.btn_next_clicked,
                                relief='flat')
         self.but_next_window = self.canvas.create_window(776, 46, width=30, height=30, window=self.but_next,anchor='nw')
 
@@ -812,8 +817,35 @@ class Play_menu():
     def btn_clicked(self):
         print('clicked button')
 
+    def but_previous_clicked(self):
+        self.app.content.content_play.btn_stop_clicked()
+        length = len(self.app.button_identities_content_play)
+        n = self.app.button_identities_content_play.index(self.app.actual_playing)
+        if n == 0:
+            self.app.content.content_play.btn_press(length-1)
+        else:
+            self.app.content.content_play.btn_press(n-1)
+
+    def btn_next_clicked(self):
+        self.app.content.content_play.btn_stop_clicked()
+        length = len(self.app.button_identities_content_play)
+        n = self.app.button_identities_content_play.index(self.app.actual_playing)
+        if n == length -1:
+            self.app.content.content_play.btn_press(0)
+        else:
+            self.app.content.content_play.btn_press(n+1)
+
+
+
     def btn_favourite_clicked(self):
-        pass
+        actual = self.app.actual_playing['text']
+        actual_path = self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE user_id=(%s) and track_name=(%s)""",(self.app.user_id,actual))[0][0]
+        print(actual_path)
+        if int(self.app.conn.execute_get("""SELECT count(*) FROM favourite WHERE track_name=(%s) and user_id=(%s)""",
+                          (actual, self.app.user_id))[0][0]) == 0:
+            self.app.conn.execute_update("""INSERT INTO favourite (user_id,track_name, track_path) VALUES (%s, %s, %s)""",(self.app.user_id, actual, actual_path))
+
+
 
     def btn_share_clicked(self):
         self.top = Toplevel( takefocus=True)
@@ -829,10 +861,10 @@ class Play_menu():
             relief="ridge")
         self.background_canvas.place(x=0, y=0)
 
-        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/Resore_Mail.png",
+        self.entry_user = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47, "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/Resore_Mail.png",
                                             5, "#3c3838")
-        self.entry_add_playlist.background_canvas_image()
-        self.entry_add_playlist.Place()
+        self.entry_user.background_canvas_image()
+        self.entry_user.Place()
 
         self.img_cancel = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/cancel_playlist.png")
         self.but_cancel = Button(self.top,
@@ -846,9 +878,9 @@ class Play_menu():
                                  relief='flat')
         self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
 
-        self.img_add = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/share_but.png")
-        self.but_add = Button(self.top,
-                              image=self.img_add,
+        self.img_top_share = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/share_but.png")
+        self.but_top_share = Button(self.top,
+                              image=self.img_top_share,
                               bd=0,
                               activebackground="black",
                               bg="black",
@@ -856,19 +888,19 @@ class Play_menu():
                               highlightthickness=0,
                               relief='flat',
                               command=self.share_music_clicked)
-        self.but_add_window = self.background_canvas.create_window(280, 186, window=self.but_add,
+        self.but_top_share_window = self.background_canvas.create_window(280, 186, window=self.but_top_share,
                                                                    anchor='nw')
         # self.but_restore.place
         # x=280, y=186,
         # width=76, height=37
 
-        self.add_playlist_label = self.background_canvas.create_text(23, 17,
+        self.share_music_label = self.background_canvas.create_text(23, 17,
                                                                      anchor='nw',
                                                                      text="Share music",
                                                                      font=font.Font(family='Ubuntu-Regular',
                                                                                     size=28), fill="white")
 
-        self.playlist_name_label = self.background_canvas.create_text(59, 103,
+        self.user_name_label = self.background_canvas.create_text(59, 103,
                                                                       anchor='nw',
                                                                       text="User",
                                                                       font=font.Font(
@@ -893,7 +925,23 @@ class Play_menu():
         self.top.destroy()
 
     def share_music_clicked(self):
-        print('clicked')
+        actual = self.app.actual_playing['text']
+        actual_path = str(self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE track_name=(%s) and user_id=(%s)""",(actual,self.app.user_id))[0][0])
+        if actual_path == '' or len(actual_path) == 0:
+            actual_path = str(
+                self.app.conn.execute_get("""SELECT track_path FROM my_mysharing WHERE track_name=(%s) and tenant=(%s)""",(actual, self.app.nick))[0][0])
+        user = str(self.entry_user.get())
+        if int(self.app.conn.execute_get("""SELECT count(*) from my_sharing WHERE tenant=(%s) and track_name =(%s)""",(user,actual))[0][0]) == 0:
+            self.app.conn.execute_update("""INSERT INTO my_sharing (user_id, track_name,track_path,tenant) 
+            VALUES(%s, %s, %s, %s) """,(self.app.user_id, actual,actual_path,user ))
+            if int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(actual, user))[0][0]) == 1:
+                self.background_canvas.itemconfig(self.message_label, text='Sharing completed')
+            else:
+                self.background_canvas.itemconfig(self.message_label, text='Something goes wrong')
+
+        else:
+            self.background_canvas.itemconfig(self.message_label,text = 'This user not exsist')
+            print('this user not exsist')
 
 
 
@@ -957,9 +1005,9 @@ class Content_search():
 
     def __del__(self):
 
-        # self.canvas.delete("all")
+        self.canvas.delete("all")
         # self.entry_search.Destroy()
-        pass
+
 
     def entry_search_focus(self, event):
         keyword = str(self.entry_search.get())
@@ -1029,27 +1077,21 @@ class Content_play():
         self.btn_track_play_window = self.canvas.create_window(0, 0, window=self.btn_track_play, anchor='nw',
                                                                width=1157 - int(self.vertibar['width']), height=38)
 
-        self.podstwowy = Button(self.window, image=self.img_track_pause, command = self.btn_podstawowy_clicked)
-        self.canvas.create_window(40,400, anchor='nw', window= self.podstwowy)
+        self.btn_stop = Button(self.window, image=self.img_track_pause, command = self.btn_stop_clicked)
+        self.canvas.create_window(40,400, anchor='nw', window= self.btn_stop)
 
-    def play_local(self):
-        self.play_local_pid = os.system("python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/client2.py")
-        #exec(open('client2.py').read())
 
-    def thread(self):
-        self.btn_track_play.configure(image= self.img_track_pause)
-        
-        self.tt =Thread(target=self.play).start()
-        #time.sleep(0.5)
-        time.sleep(1)
-        self.mm = Thread(target=self.play_local).start()
-    def play(self):
 
-        self.conn = Connection(host='192.168.1.4')
-        time.sleep(0.01)
-        print(self.conn.ssh_run_remote_command(f'python3 ~/app/server2.py {self.track_play}'))
-        print('musztarda')
-        self.play_label_press = True
+    # def play(self):
+    #
+    #     self.conn = Connection(host='192.168.1.4')
+    #     time.sleep(0.01)
+    #     print(self.conn.ssh_run_remote_command(f'python3 ~/app/server2.py {self.track_play}'))
+    #     print('musztarda')
+    #     self.play_label_press = True
+
+
+
 
             #self.conn.close()
 
@@ -1078,39 +1120,73 @@ class Content_play():
     #         self.btn_track_play.config(image=self.img_track_play)
     #         print('balwan')
 
-    def btn_podstawowy_clicked(self):
-        print('Content_paly pressed button')
+    def btn_stop_clicked(self):
+        #print('Content_paly pressed button')
+        #self.btn_track_play.configure(image=self.img_track_pause)
+        search = '{if ($8 == "Sl+") {print $2}}'
+        print('KILLL')
+        os.system("""kill -9 $(ps aux |grep -i c6|gawk '{if ($8 == "Sl+") {print $2}}')""")
+        print("PO KILL")
+        #os.system('pkill -9 client2.py')
+        # self.conn.exit_stream()
+        # if self.mm is not None:
+        #     self.mm.join()
+
+    def play_local(self):
+        self.play_local_pid = os.system(f"python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/c6.py {self.track_play}")
+        #exec(open('client2.py').read())
+
+    def thread(self):
         self.btn_track_play.configure(image=self.img_track_pause)
-        #kill -9 $(ps aux |grep -i client2|gawk '{if ($8 == "Sl+") {print $2}}')
-        os.system('pkill -9 client2.py')
-        self.conn.exit_stream()
-        if self.tt is not None:
-            self.tt.join()
+
+        # self.tt =Thread(target=self.play).start()
+        # time.sleep(0.5)
+        # time.sleep(1)
+        self.mm = Thread(target=self.play_local).start()
 
 ##################################################3
 
     def btn_press(self,n):
-        self.bname = self.button_identities[n]
+        self.bname = self.app.button_identities_content_play[n]
         print(type(self.bname))
         # print('Button', n)
         button_name = self.bname['text']
+        self.app.play_menu.canvas.itemconfig(self.app.play_menu.text_labelmusic, text=button_name)
+        #self.app.play_menu.text_labelmusic.config(text=button_name)
+        if self.app.actual_playing == self.bname:
+            self.bname.configure(image=self.img_track_play)
+            # self.app.play_menu.but_play.configure(image=self.img_track_play)
+            #jesli aktualmnie klikniety (grajacy ) przycisk jest ten sam to ten stopujemy i zmienamy ikonke
+            self.btn_stop_clicked()
+
+        elif self.app.actual_playing != self.bname:
+            self.btn_stop_clicked()
+            if isinstance(self.app.actual_playing,Button):
+                self.app.actual_playing.configure(image=self.img_track_play)
+            # self.app.play_menu.but_play.configure(image=self.img_track_pause)
+            self.bname.configure(image=self.img_track_pause)
+            self.app.actual_playing = self.bname
+
+
+
+            # self.app.actual_playing = self.bname
+
         #get_play_path = \
-        if int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id =(%s)""",(button_name,self.app.user_id))[0][0]) == 1:
-            get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE track_name=(%s)""",(button_name,))
-        elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id = (%s)""",(button_name,self.app.user_id))[0][0]) == 0:
-            if int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))[0][0]) == 1:
-                get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))
-            elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))) > 1:
-                get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name, self.app.nick))
-                get_play_path = get_play_path[0]
-            else:
-                print('Cannot find track')
-                return None
-        get_play_path = get_play_path[0][0]
-        print(get_play_path)
-        print(button_name)
-        self.track_play = get_play_path
-        self.thread()
+            if int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id =(%s)""",(button_name,self.app.user_id))[0][0]) == 1:
+                get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE track_name=(%s)""",(button_name,))
+            elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id = (%s)""",(button_name,self.app.user_id))[0][0]) == 0:
+                if int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))[0][0]) == 1:
+                    get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))
+                elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name,self.app.nick))) > 1:
+                    get_play_path = self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(button_name, self.app.nick))
+                    get_play_path = get_play_path[0]
+                else:
+                    print('Cannot find track')
+                    return None
+            get_play_path = get_play_path[0][0]
+            self.track_play = get_play_path
+
+            self.thread()
         #TUTAJ NALEZY WYWOLAC PLAY STRAMING funkcje
 
     def create_button(self,button_name):
@@ -1124,7 +1200,7 @@ class Content_play():
                                   fg='white',
                                   highlightbackground='black',
                                   bd=0,
-                                  command=partial(self.btn_press, len(self.button_identities)),
+                                  command=partial(self.btn_press, len(self.app.button_identities_content_play)),
                                   relief="groove")
 
         self.canvas.create_window(0, self.last_postion, width=1157 - int(self.vertibar['width']),
@@ -1132,7 +1208,7 @@ class Content_play():
         self.canvas.config(
             scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height']) + self.last_postion))
         print(type(self.temp_button))
-        self.button_identities.append(self.temp_button)
+        self.app.button_identities_content_play.append(self.temp_button)
 
         self.last_postion = self.last_postion + 38
 
@@ -1144,7 +1220,8 @@ class Content_play():
 
     def __del__(self):
         self.vertibar.destroy()
-        self.button_identities.clear()
+        self.canvas.delete('all')
+        #self.button_identities.clear()
 
 
 
@@ -1195,10 +1272,11 @@ class Content_menu():
     def __del__(self):
         self.content_play.__del__()
         self.content_search.__del__()
-        self.content_search_canvas.destroy()
-        self.content_play_canvas.destroy()
-        self.content_search_frame.destroy()
-        self.content_play_frame.destroy()
+        self.canvas.delete('all')
+        # self.content_search_canvas.destroy()
+        # self.content_play_canvas.destroy()
+        # self.content_search_frame.destroy()
+        # self.content_play_frame.destroy()
 
 
 
@@ -1629,9 +1707,12 @@ class App_Interface():
 
         ssh = SSH()
         self.session = ssh.connect()
+        self.button_identities_content_play = []
+        self.actual_playing = None
         self.user_update()
         self.playlist = []
         self.get_playlist()
+
 
         self.all_music = []
         self.my_music = []
@@ -1673,7 +1754,7 @@ class App_Interface():
             relief="ridge")
         self.playframe_canvas.place(x=0, y=0)
 
-        self.play_menu = Play_menu(self.playframe, self.playframe_canvas)
+        self.play_menu = Play_menu(self.playframe, self.playframe_canvas,self)
 
         self.contentframe = Frame(self.window, bg='#0F0F0E', relief='flat')
         self.contentframe.place(
@@ -1702,9 +1783,11 @@ class App_Interface():
         if self.mail == None:
             self.mail = str(self.conn.execute_get("""SELECT mail FROM userdata WHERE nick=(%s)""", (self.nick,))[0][0])
             self.user_id = int(self.conn.execute_get("""SELECT id FROM userdata WHERE nick=(%s)""", (self.nick,))[0][0])
+            #self.actual_playing = str(self.conn.execute_get("""SELECT last_play FROM userdata WHERE nick=(%s)""", (self.nick,))[0][0])
         if self.nick == None:
             self.nick = str(self.conn.execute_get("""SELECT nick FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
             self.user_id = int(self.conn.execute_get("""SELECT id FROM userdata WHERE mail=(%s)""", (self.mail,))[0][0])
+            #self.actual_playing = str(self.conn.execute_get("""SELECT last_play FROM userdata WHERE mail=(%s)""", (self.nick,))[0][0])
 
     def get_playlist(self):
         playlist_parametr =  self.conn.execute_get("""SELECT playlist_name FROM playlist WHERE user_id=(%s)""",(self.user_id,))

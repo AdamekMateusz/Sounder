@@ -598,9 +598,10 @@ class Login_menu():
 
         # else:
         #     print('zyraga')
-
-        # self.clicked_login = True
-        # self.window.destroy()
+        #tutaj dodane autologowanei do usuniecia
+        self.clicked_login = True
+        self.app.nick = 'sounder'
+        self.window.destroy()
 
     def show_register_password(self, event):
         # password_text = StringVar(window, value='')
