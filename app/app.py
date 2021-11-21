@@ -640,7 +640,7 @@ class Left_menu():
     def btn_nickname_clicked(self):
         #content
         self.app.content.__del__()
-        self.app.setting.__init__(self.app.contentframe, self.app.contentframe_canvas,self.app)
+        self.app.setting.__init__(self.app.contentframe,self.app)
         print('btn nickname clicked')
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
@@ -652,10 +652,11 @@ class Left_menu():
         for item in all_music:
             if not str(item[0]) in self.app.all_music:
                 self.app.all_music.append(str(item[0]))
-        self.app.content.content_play.canvas.delete('all')
-        self.app.content.content_play.last_postion = 0
-        self.app.content.content_play.render_button(self.app.all_music)
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.app.all_music)
         #tutja to sie zobaczy czy to tak bedzie dzialac
+        #self.app.last_render = self.app.content.render_button(self.app.all_music)
 
     def btn_my_music_clicked(self):
         my_music = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s)""",(self.app.user_id,))
@@ -668,9 +669,10 @@ class Left_menu():
             if not str(item[0]) in self.app.my_music:
                 self.app.my_music.append(str(item[0]))
         #print(self.app.my_music)
-        self.app.content.content_play.canvas.delete('all')
-        self.app.content.content_play.last_postion = 0
-        self.app.content.content_play.render_button(self.app.my_music)
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.app.my_music)
+        #self.app.last_render = self.app.content.render_button(self.app.my_music)
 
     def btn_my_sharing_clicked(self):
         my_sharing = self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE user_id=(SELECT id FROM userdata WHERE nick=(%s))""",(self.app.nick,))
@@ -679,9 +681,10 @@ class Left_menu():
             if not str(item[0]) in self.app.my_sharing:
                 self.app.my_sharing.append(str(item[0]))
 
-        self.app.content.content_play.canvas.delete('all')
-        self.app.content.content_play.last_postion = 0
-        self.app.content.content_play.render_button(self.app.my_sharing)
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.app.my_sharing)
+        self.app.last = self.app.content.render_button(self.app.my_sharing)
 
     def btn_sharing_me_clicked(self):
         sharing_me = self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s)""",(self.app.nick,))
@@ -689,9 +692,10 @@ class Left_menu():
         for item in sharing_me:
             if not str(item[0]) in self.app.sharing_me:
                 self.app.sharing_me.append(str(item[0]))
-        self.app.content.content_play.canvas.delete('all')
-        self.app.content.content_play.last_postion = 0
-        self.app.content.content_play.render_button(self.app.sharing_me)
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.app.sharing_me)
+        #self.app.last_render = self.app.content.render_button(self.app.sharing_me)
 
     def favourite_clicked(self):
         favourite = self.app.conn.execute_get("SELECT track_name FROM favourite WHERE user_id=(%s)",(self.app.user_id,))
@@ -699,9 +703,10 @@ class Left_menu():
         for item in favourite:
             if not str(item[0]) in self.app.favourite:
                 self.app.favourite.append(str(item[0]))
-        self.app.content.content_play.canvas.delete('all')
-        self.app.content.content_play.last_postion = 0
-        self.app.content.content_play.render_button(self.app.favourite)
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.app.favourite)
+        #self.app.last_render = self.app.content.render_button(self.app.favourite)
 
     def btn_clicked(self):
         print("Button Clicked")
@@ -814,26 +819,30 @@ class Play_menu():
                                relief='flat')
         self.but_favourite_window = self.canvas.create_window(1344, 46, width=30, height=30, window=self.but_share,anchor='nw')
 
+    # def get_text_label(self):
+    #     self.canvas.
+
     def btn_clicked(self):
         print('clicked button')
 
     def but_previous_clicked(self):
-        self.app.content.content_play.btn_stop_clicked()
+        self.app.content.btn_stop_clicked()
         length = len(self.app.button_identities_content_play)
         n = self.app.button_identities_content_play.index(self.app.actual_playing)
         if n == 0:
-            self.app.content.content_play.btn_press(length-1)
+            self.app.content.btn_press(length-1)
         else:
-            self.app.content.content_play.btn_press(n-1)
+            self.app.content.btn_press(n-1)
 
     def btn_next_clicked(self):
-        self.app.content.content_play.btn_stop_clicked()
+        self.app.content.btn_stop_clicked()
         length = len(self.app.button_identities_content_play)
         n = self.app.button_identities_content_play.index(self.app.actual_playing)
         if n == length -1:
-            self.app.content.content_play.btn_press(0)
+            self.app.content.btn_press(0)
         else:
-            self.app.content.content_play.btn_press(n+1)
+
+            self.app.content.btn_press(n+1)
 
 
 
@@ -1001,7 +1010,7 @@ class Content_search():
         # app.content.content_search.__del__()
         # app.content.content_play.__del__()
         self.app.content.__del__()
-        self.app.setting.__init__(self.app.contentframe, self.app.contentframe_canvas, self.app)
+        self.app.setting.__init__(self.app.contentframe, self.app)
 
     def __del__(self):
 
@@ -1061,21 +1070,21 @@ class Content_play():
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/pause_label.png")
         self.img_track_play = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/play_label.png")
-        self.btn_track_play = Button(self.window,
-                                     text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
-                                     compound='left',
-                                     image=self.img_track_play,
-                                     activebackground="green",
-                                     bg=self.canvas['bg'],
-                                     fg='white',
-                                     highlightbackground='black',
-                                     bd=0,
-                                     command=self.thread,
-                                     anchor="w",
-                                     relief="groove")
-
-        self.btn_track_play_window = self.canvas.create_window(0, 0, window=self.btn_track_play, anchor='nw',
-                                                               width=1157 - int(self.vertibar['width']), height=38)
+        # self.btn_track_play = Button(self.window,
+        #                              text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
+        #                              compound='left',
+        #                              image=self.img_track_play,
+        #                              activebackground="green",
+        #                              bg=self.canvas['bg'],
+        #                              fg='white',
+        #                              highlightbackground='black',
+        #                              bd=0,
+        #                              command=self.thread,
+        #                              anchor="w",
+        #                              relief="groove")
+        #
+        # self.btn_track_play_window = self.canvas.create_window(0, 0, window=self.btn_track_play, anchor='nw',
+        #                                                        width=1157 - int(self.vertibar['width']), height=38)
 
         self.btn_stop = Button(self.window, image=self.img_track_pause, command = self.btn_stop_clicked)
         self.canvas.create_window(40,400, anchor='nw', window= self.btn_stop)
@@ -1226,53 +1235,271 @@ class Content_play():
 
 
 class Content_menu():
-    def __init__(self, frame, canvas, app_interface=None):
+    def __init__(self, frame, app_interface=None):
         self.app = app_interface
         self.window = frame
-        self.canvas = canvas
+        #self.canvas = canvas
 
-        self.content_search_frame = Frame(self.window, bg='black', relief='flat')
-        self.content_search_frame.place(
-            x=0,
-            y=0,
-            width=1157,
-            height=75)
+
 
         self.content_search_canvas = Canvas(
-            self.content_search_frame,
+            self.window,
             bg="#0F0F0E",
-            width=1157,
+            width=1157 -15,
             height=75,
             bd=0,
             highlightthickness=0,
             relief="ridge")
-        self.content_search_canvas.place(x=0, y=0)
+        #self.content_search_canvas.place(x=0, y=0)
+        self.content_search_canvas.grid(row=0,column=0)
 
-        self.content_play_frame = Frame(self.window, bg='black', relief='flat')
-        self.content_play_frame.place(
-            x=0,
-            y=75,
-            width=1157,
-            height=910 - 75)
 
         self.content_play_canvas = Canvas(
-            self.content_play_frame,
+            self.window,
             bg="#0F0F0E",
-            width=1157,
+            width=1157 -15,
             height=910 - 75,
             bd=0,
             highlightthickness=0,
             relief="ridge")
-        self.content_play_canvas.place(x=0, y=0)
+        #self.content_play_canvas.place(x=0, y=75)
+        self.content_play_canvas.grid(row=1, column=0)
         #on tu tworzy now ainstacje tego za kazdym razem jak wyjdziemy z Setting menu , a my mamy sie wrocic do starej
         #w App interaface trzeb autworzyc tego instancje i tutu wywlaoc
-        self.content_search = Content_search(self.content_search_frame, self.content_search_canvas,self.app)
-        self.content_play = Content_play(self.content_play_frame, self.content_play_canvas,self.app)
+
+        self.entry_search = Entry_Box(self.window, self.content_search_canvas, 141, 31, 758, 30,
+                                      "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/Wyszukiwarka.png",
+                                      90, "#C4C4C4")
+        self.entry_search.background_canvas_image()
+        self.entry_search.Place()
+        self.entry_search.bind("<Return>", self.entry_search_focus)
+
+        self.img_setting = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/setting_icon.png")
+        self.but_setting = Button(self.window,
+                                  image=self.img_setting,
+                                  bd=0,
+                                  borderwidth=0,
+                                  highlightthickness=0,
+                                  activebackground=self.content_search_canvas['bg'],
+                                  bg=self.content_search_canvas['bg'],
+                                  command=self.btn_setting_clicked,
+                                  relief='flat')
+        # self.but_setting_window = self.canvas.create_window(1080, 15, window=self.but_setting, anchor='nw')
+        self.but_setting_window = self.content_search_canvas.create_window(1080, 15, anchor='nw', window=self.but_setting)
+
+        ####################################
+
+        ### Content play
+        #####################################
+
+        self.last_postion = 0
+        self.button_identities = []
+        self.play_label_press = False
+
+        self.last_record_position = 75
+        self.button_list = []
+
+        self.content_play_canvas.config(
+            scrollregion=(0, 0, int(self.content_play_canvas['width']), int(self.content_play_canvas['height']) + 200))
+        # self.vertibar = Scrollbar(
+        #     self.window,
+        #     bd=0,
+        #     troughcolor=self.content_play_canvas['bg'],
+        #     bg="#3C3838",
+        #     activebackground="green",
+        #     orient='vertical'
+        # )
+        #
+        # self.vertibar.pack(side=RIGHT, fill=Y)
+        # # self.vertibar.place(x=1157-16,y=75)
+        # # self.vertibar.grid(row=0, column=0, sticky='ns')
+        # self.vertibar.config(command=self.content_play_canvas.yview)
+        # self.content_play_canvas.config(
+        #     yscrollcommand=self.vertibar.set
+        # )
+
+        self.vertibar = Scrollbar(
+            self.window,
+            bd=0,
+            troughcolor=self.content_play_canvas['bg'],
+            bg="#3C3838",
+            activebackground="green",
+            orient='vertical')
+        self.vertibar.config(command=self.content_play_canvas.yview)
+        self.vertibar.grid(row=1, column=1, sticky=N + S)
+        self.content_play_canvas.config(yscrollcommand=self.vertibar.set)
+
+        self.img_track_pause = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/pause_label.png")
+        self.img_track_play = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/play_label.png")
+        self.btn_track_play = Button(self.window,
+                                     text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
+                                     compound='left',
+                                     image=self.img_track_play,
+                                     activebackground="green",
+                                     bg=self.content_play_canvas['bg'],
+                                     fg='white',
+                                     highlightbackground='black',
+                                     bd=0,
+                                     command=self.thread,
+                                     anchor="w",
+                                     relief="groove")
+
+        self.btn_track_play_window = self.content_play_canvas.create_window(0, 0, window=self.btn_track_play, anchor='nw',
+                                                               width=1157 - int(self.vertibar['width']), height=38)
+
+        self.btn_stop = Button(self.window, image=self.img_track_pause, command=self.btn_stop_clicked)
+        self.content_play_canvas.create_window(40, 400, anchor='nw', window=self.btn_stop)
+
+
+
+
+        #################
+        # Play Functiom
+        ################3
+
+    def btn_stop_clicked(self):
+        # print('Content_paly pressed button')
+        # self.btn_track_play.configure(image=self.img_track_pause)
+        search = '{if ($8 == "Sl+") {print $2}}'
+        print('KILLL')
+        os.system("""kill -9 $(ps aux |grep -i c6|gawk '{if ($8 == "Sl+") {print $2}}')""")
+        print("PO KILL")
+        # os.system('pkill -9 client2.py')
+        # self.conn.exit_stream()
+        # if self.mm is not None:
+        #     self.mm.join()
+
+    def play_local(self):
+        self.play_local_pid = os.system(
+            f"python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/c6.py {self.track_play}")
+        # exec(open('client2.py').read())
+
+    def thread(self):
+        self.btn_track_play.configure(image=self.img_track_pause)
+
+        # self.tt =Thread(target=self.play).start()
+        # time.sleep(0.5)
+        # time.sleep(1)
+        self.mm = Thread(target=self.play_local).start()
+
+    ##################################################3
+
+    def btn_press(self, n):
+        self.bname = self.app.button_identities_content_play[n]
+        print(type(self.bname))
+        # print('Button', n)
+        button_name = self.bname['text']
+        #self.app.content.content_play_canvas.itemconfig(self.app.play_menu.text_labelmusic, text=self.app.button_identities_content_play[n]['text'])
+        # self.app.play_menu.text_labelmusic.config(text=button_name)
+        if self.app.actual_playing == self.bname:
+            self.bname.configure(image=self.img_track_play)
+            # self.app.play_menu.but_play.configure(image=self.img_track_play)
+            # jesli aktualmnie klikniety (grajacy ) przycisk jest ten sam to ten stopujemy i zmienamy ikonke
+            self.btn_stop_clicked()
+
+        elif self.app.actual_playing != self.bname:
+            self.btn_stop_clicked()
+            if isinstance(self.app.actual_playing, Button):
+                self.app.actual_playing.configure(image=self.img_track_play)
+            # self.app.play_menu.but_play.configure(image=self.img_track_pause)
+            self.bname.configure(image=self.img_track_pause)
+            self.app.actual_playing = self.bname
+
+            # self.app.actual_playing = self.bname
+
+            # get_play_path = \
+            if int(self.app.conn.execute_get(
+                    """SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id =(%s)""",
+                    (self.app.button_identities_content_play[n]['text'], self.app.user_id))[0][0]) == 1:
+                get_play_path = self.app.conn.execute_get(
+                    """SELECT track_path FROM my_music WHERE track_name=(%s)""", (self.app.button_identities_content_play[n]['text'],))
+            elif int(self.app.conn.execute_get(
+                    """SELECT count(*) FROM my_music WHERE track_name=(%s) and user_id = (%s)""",
+                    (self.app.button_identities_content_play[n]['text'], self.app.user_id))[0][0]) == 0:
+                if int(self.app.conn.execute_get(
+                        """SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",
+                        (self.app.button_identities_content_play[n]['text'], self.app.nick))[0][0]) == 1:
+                    get_play_path = self.app.conn.execute_get(
+                        """SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",
+                        (self.app.button_identities_content_play[n]['text'], self.app.nick))
+                elif int(self.app.conn.execute_get(
+                        """SELECT count(*) FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",
+                        (self.app.button_identities_content_play[n]['text'], self.app.nick))) > 1:
+                    get_play_path = self.app.conn.execute_get(
+                        """SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",
+                        (self.app.button_identities_content_play[n]['text'], self.app.nick))
+                    get_play_path = get_play_path[0]
+                else:
+                    print('Cannot find track')
+                    return None
+            get_play_path = get_play_path[0][0]
+            self.track_play = get_play_path
+
+            self.thread()
+        # TUTAJ NALEZY WYWOLAC PLAY STRAMING funkcje
+
+    def create_button(self, button_name):
+        self.temp_button = Button(self.window,
+                                  text=button_name,
+                                  activebackground="green",
+                                  compound='left',
+                                  image=self.img_track_play,
+                                  anchor='w',
+                                  bg="black",
+                                  fg='white',
+                                  highlightbackground='black',
+                                  bd=0,
+                                  command=partial(self.btn_press, len(self.app.button_identities_content_play)),
+                                  relief="groove")
+
+        self.content_play_canvas.create_window(0, self.last_postion, width=1157 - int(self.vertibar['width']),
+                                  height=38, anchor='nw', window=self.temp_button)
+        self.content_play_canvas.config(
+            scrollregion=(0, 0, int(self.content_play_canvas['width']), int(self.content_play_canvas['height']) + self.last_postion))
+        #skod to tutja
+        #self.content_play_canvas.create_window(40, 400, anchor='nw', window=self.btn_stop)
+        print(type(self.temp_button))
+        self.app.button_identities_content_play.append(self.temp_button)
+
+        self.last_postion = self.last_postion + 38
+
+    def render_button(self, button_list):
+        for item in button_list:
+            self.create_button(item)
+
+
+
+
+    def btn_setting_clicked(self):
+        # app.content.__del__()
+        # self.__del__()
+        # app.content.content_search.__del__()
+        # app.content.content_play.__del__()
+        self.app.content.__del__()
+        self.app.setting.__init__(self.app.contentframe, self.app)
+
+    def entry_search_focus(self, event):
+        keyword = str(self.entry_search.get())
+        keyword ='%' + keyword + '%'
+        findall_track = self.app.conn.execute_get("""SELECT track_name FROM my_music WHERE user_id=(%s) and track_name ILIKE (%s)""",(self.app.user_id, keyword))
+        findall_track.extend(self.app.conn.execute_get("""SELECT track_name FROM my_sharing WHERE tenant=(%s) and track_name ILIKE (%s)""", (self.app.nick, keyword)))
+
+        self.app.findall_track.clear()
+        for item in findall_track:
+            self.app.findall_track.append(str(item[0]))
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.app.findall_track)
 
     def __del__(self):
-        self.content_play.__del__()
-        self.content_search.__del__()
-        self.canvas.delete('all')
+        #self.content_play_canvas.delete('all')
+        #self.content_search_canvas.delete('all')
+        #self.content_play_canvas.destroy()
+        #self.content_search_canvas.destroy()
+        self.vertibar.destroy()
         # self.content_search_canvas.destroy()
         # self.content_play_canvas.destroy()
         # self.content_search_frame.destroy()
@@ -1282,12 +1509,24 @@ class Content_menu():
 
 
 class Setting_menu():
-    def __init__(self,frame,canvas, app_interface=None):
+    def __init__(self,frame, app_interface=None):
         self.app = app_interface
         self.window = frame
-        self.canvas = canvas
-        print(self.app.mail)
-        print(self.app.nick)
+        #self.canvas = canvas
+
+
+        self.canvas = Canvas(
+            self.window,
+            bg="#0F0F0E",
+            height=912,
+            width=1157-15,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.canvas.grid(row=0,column=0)
+
+        #print(self.app.mail)
+        #print(self.app.nick)
         #self.canvas = canvas
 
 
@@ -1334,12 +1573,15 @@ class Setting_menu():
             orient='vertical'
         )
 
-        self.vertibar.pack(side=RIGHT, fill=Y)
+        # self.vertibar.pack(side=RIGHT, fill=Y)
+        # self.vertibar.config(command=self.canvas.yview)
         self.vertibar.config(command=self.canvas.yview)
-
-        self.canvas.config(
-            yscrollcommand=self.vertibar.set
-        )
+        self.vertibar.grid(row=0, column=1, sticky=N + S)
+        self.canvas.config(yscrollcommand=self.vertibar.set)
+        #
+        # self.canvas.config(
+        #     yscrollcommand=self.vertibar.set
+        # )
         #self.canvas.pack(expand=True, side=LEFT, fill=BOTH)
 
 
@@ -1577,6 +1819,10 @@ class Setting_menu():
         #self.canvas.delete(self.setting_label)
 
         self.canvas.delete("all")
+        self.canvas.destroy()
+        #self.app.last_render
+        #self.app.content.render_button(self.app.button_identities_content_play)
+        #self.app.content.render_button(self.app.my_music)
         #self.canvas.configure(yscrollcommand=-1)
 
     def btn_change_password_clicked(self):
@@ -1677,7 +1923,7 @@ class Setting_menu():
         #Content_menu(self.window,self.canvas,self.app)
         #self.app.content = Content_menu(self.window,self.canvas, self.app)
         #tu wczesniej bylo to wyzej
-        self.app.content.__init__(self.window, self.canvas,self.app)
+        self.app.content.__init__(self.window,self.app)
 
     def select_file(self):
         filetypes = (
@@ -1708,6 +1954,7 @@ class App_Interface():
         ssh = SSH()
         self.session = ssh.connect()
         self.button_identities_content_play = []
+        #self.last_render = None
         self.actual_playing = None
         self.user_update()
         self.playlist = []
@@ -1763,20 +2010,22 @@ class App_Interface():
             width=1157,
             height=912)
 
-        self.contentframe_canvas = Canvas(
-            self.contentframe,
-            bg="#0F0F0E",
-            height=912,
-            width=1157,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge")
-        self.contentframe_canvas.place(x=0, y=0)
+        # self.contentframe_canvas = Canvas(
+        #     self.contentframe,
+        #     bg="#0F0F0E",
+        #     height=912,
+        #     width=1157,
+        #     bd=0,
+        #     highlightthickness=0,
+        #     relief="ridge")
+        # self.contentframe_canvas.place(x=0, y=0)
+        #self.contentframe_canvas.grid(row=0,column=0)
+        self.content = Content_menu(self.contentframe, self)
 
-        self.setting = Setting_menu(self.contentframe, self.contentframe_canvas, self)
+        self.setting = Setting_menu(self.contentframe, self)
         self.setting.__del__()
 
-        self.content = Content_menu(self.contentframe, self.contentframe_canvas, self)
+
 
 
     def user_update(self):
