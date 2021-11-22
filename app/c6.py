@@ -42,7 +42,7 @@ def audio_stream_UDP():
         while True:
             frame, _ = ClientSocket.recvfrom(BUFF_SIZE)
             q.put(frame)
-            print('Queue size...', q.qsize())
+            #print('Queue size...', q.qsize())
 
 
     t1 = threading.Thread(target=getAudioData, args=())

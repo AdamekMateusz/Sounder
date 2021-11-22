@@ -13,7 +13,10 @@ from connect import *
 from ssh import *
 from pydub import AudioSegment
 from utilities import Md5, SendMail
-
+import socket
+import threading, wave, pyaudio, time, queue,os
+import sys
+import multiprocessing
 
 
 
@@ -36,6 +39,8 @@ class Playlist_Menu():
         self.last_postion = 0
         self.playlist_path = "/home/mateusz/dwhelper"
         self.button_identities = []
+        self.button_identities_content = []
+        self.playlist_content = []
         self.canvas.config(
         scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])))
         #scrollregion=(0, 0, int(self.canvas['width']), int(self.canvas['height'])+self.last_postion-9*47)
@@ -252,6 +257,7 @@ class Playlist_Menu():
             # self.create_playlist(temp_label)
 
     def btn_playlist_press(self,n):
+        self.playlist_content.clear()
         self.bname = self.button_identities[n]
         print(type(self.bname))
         # print('Button', n)
@@ -259,6 +265,20 @@ class Playlist_Menu():
 
         list_of_track = self.app.conn.execute_get("""SELECT * FROM playlist_content WHERE playlist_id = (SELECT id FROM playlist WHERE playlist_name=(%s))""",(playlist_name,))
         print(list_of_track)
+        for item in list_of_track:
+            if not str(item[2]) in self.playlist_content:
+                self.playlist_content.append(str(item[2]))
+        self.app.content.content_play_canvas.delete('all')
+        self.app.content.last_postion = 0
+        self.app.content.render_button(self.playlist_content)
+
+        # for item in my_music:
+        #     if not str(item[0]) in self.app.my_music:
+        #         self.app.my_music.append(str(item[0]))
+        # # print(self.app.my_music)
+        # self.app.content.content_play_canvas.delete('all')
+        # self.app.content.last_postion = 0
+        # self.app.content.render_button(self.app.my_music)
 
         # music_path = os.path.join(self.playlist_path, playlist_name)
         # if os.path.exists(music_path):
@@ -730,7 +750,7 @@ class Play_menu():
         self.text_labelmusic = self.canvas.create_text(122, 18, anchor='nw', text='', fill='white',font=font.Font(family='Ubuntu-Regular',
                                                                                     size=14))
 
-
+        """
         self.img_play_once =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/play_once.png")
         self.but_play_once = Button(self.window,
                                   image=self.img_play_once,
@@ -741,8 +761,9 @@ class Play_menu():
                                   bg=self.canvas['bg'],
                                   command=self.btn_clicked,
                                   relief='flat')
-        self.but_previous_window = self.canvas.create_window(608, 46,width=30, height=30, window=self.but_play_once, anchor='nw')
-
+        
+        self.but_play_one_window = self.canvas.create_window(608, 46,width=30, height=30, window=self.but_play_once, anchor='nw')
+        """
         self.img_previous =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/previous.png")
         self.but_previous = Button(self.window,
                                   image=self.img_previous,
@@ -759,7 +780,7 @@ class Play_menu():
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/pause_label.png")
         self.img_track_play = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/play_label.png")
-
+        """
         self.but_play = Button(self.window,
                                   image=self.img_track_play,
                                   bd=0,
@@ -767,10 +788,10 @@ class Play_menu():
                                   highlightthickness=0,
                                   activebackground=self.canvas['bg'],
                                   bg=self.canvas['bg'],
-                                  command=self.btn_clicked,
+                                  command=self.btn_play_clicked,
                                   relief='flat')
         self.but_play_window = self.canvas.create_window(720, 46,width=30, height=30, window=self.but_play, anchor='nw')
-
+        """
         self.img_next = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/next.png")
         self.but_next = Button(self.window,
                                image=self.img_next,
@@ -782,7 +803,7 @@ class Play_menu():
                                command=self.btn_next_clicked,
                                relief='flat')
         self.but_next_window = self.canvas.create_window(776, 46, width=30, height=30, window=self.but_next,anchor='nw')
-
+        """
         self.img_shuffle = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/shuffle.png")
         self.but_shuffle = Button(self.window,
                                image=self.img_shuffle,
@@ -793,8 +814,9 @@ class Play_menu():
                                bg=self.canvas['bg'],
                                command=self.btn_clicked,
                                relief='flat')
+        
         self.but_shuffle_window = self.canvas.create_window(832, 46, width=30, height=30, window=self.but_shuffle,anchor='nw')
-
+        """
         self.img_favourite = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/HEART.png")
         self.but_favourite = Button(self.window,
                                image=self.img_favourite,
@@ -824,7 +846,18 @@ class Play_menu():
 
     def btn_clicked(self):
         print('clicked button')
-
+    # Play Button
+    """
+    def btn_play_clicked(self):
+        print(self.but_play.cget('image'))
+        if self.but_play.cget('image') == "pyimage28":
+            n = self.app.button_identities_content_play.index(self.app.actual_playing)
+            self.app.content.btn_press(n)
+            self.but_play.configure(image=self.img_track_pause)
+        elif self.but_play.cget('image') == "pyimage27":
+            self.app.content.btn_stop_clicked()
+            self.but_play.configure(image=self.img_track_play)
+    """
     def but_previous_clicked(self):
         self.app.content.btn_stop_clicked()
         length = len(self.app.button_identities_content_play)
@@ -848,7 +881,14 @@ class Play_menu():
 
     def btn_favourite_clicked(self):
         actual = self.app.actual_playing['text']
-        actual_path = self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE user_id=(%s) and track_name=(%s)""",(self.app.user_id,actual))[0][0]
+        actual_path = ''
+        if int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE user_id=(%s) and track_name=(%s)""",(self.app.user_id,actual))[0][0]) > 0:
+            actual_path = self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE user_id=(%s) and track_name=(%s)""",(self.app.user_id,actual))[0][0]
+        if actual_path == '' or len(actual_path) == 0:
+            if int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE tenant=(%s) and track_name=(%s)""",(self.app.nick,actual))[0][0]) > 0:
+                actual_path = str(self.app.conn.execute_get(
+                    """SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(actual, self.app.nick))[0][0])
+
         print(actual_path)
         if int(self.app.conn.execute_get("""SELECT count(*) FROM favourite WHERE track_name=(%s) and user_id=(%s)""",
                           (actual, self.app.user_id))[0][0]) == 0:
@@ -938,7 +978,7 @@ class Play_menu():
         actual_path = str(self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE track_name=(%s) and user_id=(%s)""",(actual,self.app.user_id))[0][0])
         if actual_path == '' or len(actual_path) == 0:
             actual_path = str(
-                self.app.conn.execute_get("""SELECT track_path FROM my_mysharing WHERE track_name=(%s) and tenant=(%s)""",(actual, self.app.nick))[0][0])
+                self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE track_name=(%s) and tenant=(%s)""",(actual, self.app.nick))[0][0])
         user = str(self.entry_user.get())
         if int(self.app.conn.execute_get("""SELECT count(*) from my_sharing WHERE tenant=(%s) and track_name =(%s)""",(user,actual))[0][0]) == 0:
             self.app.conn.execute_update("""INSERT INTO my_sharing (user_id, track_name,track_path,tenant) 
@@ -1141,6 +1181,8 @@ class Content_play():
         # if self.mm is not None:
         #     self.mm.join()
 
+
+
     def play_local(self):
         self.play_local_pid = os.system(f"python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/c6.py {self.track_play}")
         #exec(open('client2.py').read())
@@ -1239,6 +1281,11 @@ class Content_menu():
         self.app = app_interface
         self.window = frame
         #self.canvas = canvas
+
+
+
+
+        self.p = None
 
 
 
@@ -1363,18 +1410,83 @@ class Content_menu():
     def btn_stop_clicked(self):
         # print('Content_paly pressed button')
         # self.btn_track_play.configure(image=self.img_track_pause)
-        search = '{if ($8 == "Sl+") {print $2}}'
-        print('KILLL')
-        os.system("""kill -9 $(ps aux |grep -i c6|gawk '{if ($8 == "Sl+") {print $2}}')""")
-        print("PO KILL")
+        if isinstance(self.p,multiprocessing.Process):
+            self.p.terminate()
+            self.p.join()
+        ###TO GIT
+        # search = '{if ($8 == "Sl+") {print $2}}'
+        # print('KILLL')
+        # os.system("""kill -9 $(ps aux |grep -i c6|gawk '{if ($8 == "Sl+") {print $2}}')""")
+        # print("PO KILL")
+        ###KONIEC GIT
+
         # os.system('pkill -9 client2.py')
         # self.conn.exit_stream()
         # if self.mm is not None:
         #     self.mm.join()
 
+    ############################################33
+    ##################NEW PROCESS############################
+
+    def audio_stream_UDP(self,message):
+        BUFF_SIZE = 65536
+        q = queue.Queue(maxsize=2000)
+        ClientSocket = socket.socket()
+        host = '192.168.1.4'
+        port = 9633
+
+
+        print('Waiting for connection')
+        try:
+            ClientSocket.connect((host, port))
+        except socket.error as e:
+            print(str(e))
+        # ClientSocket.send(str.encode(track_name),(host, port))
+
+        p = pyaudio.PyAudio()
+        CHUNK = 10 * 1024
+        stream = p.open(format=p.get_format_from_width(2),
+                        channels=2,
+                        rate=44100,
+                        output=True,
+                        frames_per_buffer=CHUNK)
+
+        #message = sys.argv[1]
+        message = str.encode(message)
+        ClientSocket.sendto(message, (host, port))
+
+        socket_address = (host, port)
+
+        def getAudioData():
+            while True:
+                frame, _ = ClientSocket.recvfrom(BUFF_SIZE)
+                q.put(frame)
+                # print('Queue size...', q.qsize())
+
+        t1 = threading.Thread(target=getAudioData, args=())
+        t1.start()
+        time.sleep(0.5)
+        # print('Now Playing...')
+        while True:
+            frame = q.get()
+            stream.write(frame)
+
+
+            if len(frame) == 0:
+                break
+
+        ClientSocket.close()
+        print('Audio closed')
+        os._exit(1)
+
+    ###################################################
+
     def play_local(self):
-        self.play_local_pid = os.system(
-            f"python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/c6.py {self.track_play}")
+        self.p = threading.Thread(target=self.audio_stream_UDP, args=(self.track_play,))
+        self.p.start()
+
+
+        #self.play_local_pid = os.system(f"python3 /home/mateusz/PycharmProjects/TkinterProj/inz/app/c6.py {self.track_play}")
         # exec(open('client2.py').read())
 
     def thread(self):
@@ -1383,8 +1495,13 @@ class Content_menu():
         # self.tt =Thread(target=self.play).start()
         # time.sleep(0.5)
         # time.sleep(1)
-        self.mm = Thread(target=self.play_local).start()
 
+        #self.mm = Thread(target=self.play_local).start()
+
+        self.p = multiprocessing.Process(target = self.audio_stream_UDP, args = (self.track_play,))
+        #self.p = multiprocessing.Process(target=self.play_local)
+        self.p.start()
+        #Normalnie processing mozna stad odpalic
     ##################################################3
 
     def btn_press(self, n):
@@ -1392,19 +1509,21 @@ class Content_menu():
         print(type(self.bname))
         # print('Button', n)
         button_name = self.bname['text']
+        self.app.play_menu.canvas.itemconfig(self.app.play_menu.text_labelmusic, text=button_name)
         #self.app.content.content_play_canvas.itemconfig(self.app.play_menu.text_labelmusic, text=self.app.button_identities_content_play[n]['text'])
         # self.app.play_menu.text_labelmusic.config(text=button_name)
         if self.app.actual_playing == self.bname:
             self.bname.configure(image=self.img_track_play)
-            # self.app.play_menu.but_play.configure(image=self.img_track_play)
+            #self.app.play_menu.but_play.configure(image=self.img_track_play)
             # jesli aktualmnie klikniety (grajacy ) przycisk jest ten sam to ten stopujemy i zmienamy ikonke
             self.btn_stop_clicked()
 
         elif self.app.actual_playing != self.bname:
             self.btn_stop_clicked()
+
             if isinstance(self.app.actual_playing, Button):
                 self.app.actual_playing.configure(image=self.img_track_play)
-            # self.app.play_menu.but_play.configure(image=self.img_track_pause)
+            #self.app.play_menu.but_play.configure(image=self.img_track_pause)
             self.bname.configure(image=self.img_track_pause)
             self.app.actual_playing = self.bname
 
