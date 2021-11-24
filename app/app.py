@@ -18,7 +18,241 @@ import threading, wave, pyaudio, time, queue, os
 import sys
 import multiprocessing
 
+class Add_To_Playlist():
+    def __init__(self, window, app_interface):
+        self.app = app_interface
+        self.window = window
+        self.top = Toplevel(self.window, takefocus=True)
+        self.top.geometry("478x302")
+        self.top.title("Add playlist")
 
+        self.background_canvas = Canvas(
+            self.top,
+            bg="black",
+            height=302,
+            width=478,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.background_canvas.place(x=0, y=0)
+
+        self.img_cancel = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/cancel_playlist.png")
+        self.but_cancel = Button(self.top,
+                                 image=self.img_cancel,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 command=self.btn_cancel_clicked,
+                                 relief='flat')
+        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+
+        self.entry_add_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47,
+                                               "/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Resore_Mail.png",
+                                               5, "#3c3838")
+        self.entry_add_playlist.background_canvas_image()
+        self.entry_add_playlist.Place()
+
+        self.img_add = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/ADD_playlist.png")
+        self.but_add = Button(self.top,
+                                 image=self.img_add,
+                                 bd=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 relief='flat',
+                                 command=self.btn_add_clicked)
+        self.but_add_window = self.background_canvas.create_window(280, 186, window=self.but_add,
+                                                                      anchor='nw')
+
+        self.add_playlist_label = self.background_canvas.create_text(23, 17,
+                                                                     anchor='nw',
+                                                                     text="Add to playlist",
+                                                                     font=font.Font(family='Ubuntu-Regular',
+                                                                                    size=28), fill="white")
+
+        self.playlist_name_label = self.background_canvas.create_text(59, 103,
+                                                                      anchor='nw',
+                                                                      text="Playlist Name",
+                                                                      font=font.Font(
+                                                                          family='Ubuntu-Regular',
+                                                                          size=10,
+                                                                          weight='bold',
+                                                                          slant='italic'),
+                                                                      fill="#3c3838")
+
+        self.message_label = self.background_canvas.create_text(111, 73,
+                                                                anchor='nw',
+                                                                text="",
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=10,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+
+
+    def get_track_path(self, track_name):
+        if int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE user_id=(%s) and track_name=(%s)""", (self.app.user_id, track_name))[0][0]) == 1:
+            my = str(self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE user_id=(%s) and track_name=(%s)""", (self.app.user_id, track_name)[0][0]))
+            return my
+        elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE tenant=(%s) and track_name=(%s)""", (self.app.nick, track_name))[0][0]) == 1:
+            share = str(self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE tenant=(%s) and track_name=(%s)""", (self.app.nick, track_name))[0][0])
+            return share
+        # else:
+        #     return False
+
+
+    def btn_add_clicked(self):
+        track_name = str(self.app.play_menu.text_labelmusic['text'])
+        print({'TRACK NAME':track_name})
+        name_playlist = str(self.entry_add_playlist.get())
+        if name_playlist in self.app.playlist:
+            playlist_id = int(self.app.conn.execute_get("""SELECT id FROM playlist WHERE user_id=(%s) and playlist_name=(%s)""",(self.app.user_id, name_playlist))[0][0])
+            no_exist = int(self.app.conn.execute_get("""SELECT count(*) FROM playlist_content WHERE playlist_id=(%s) and track_name=(%s)""",(playlist_id,track_name))[0][0])
+            if no_exist == 0:
+                #oznacza to ze w naszej pleyliscie do ktorej chcemy dodac  nie ma jeszcze tego utworu
+                track_path = self.get_track_path(track_name)
+                # if track_path == False:
+                #     self.background_canvas.itemconfig(self.message_label, text='Unexpected eror')
+                #     return
+                # else:
+                self.app.conn.execute_update("""INSERT INTO playlist_content (playlist_id, track_name, track_path) VALUES( %s, %s, %s) """, (playlist_id, track_name,track_path ))
+
+            else:
+                self.background_canvas.itemconfig(self.message_label, text='This track exist in this playlist')
+        else:
+            self.background_canvas.itemconfig(self.message_label, text='This playlist not exist')
+
+
+    def btn_cancel_clicked(self):
+        self.top.destroy()
+
+
+class Delete_Playlist():
+    def __init__(self, window, app_interface ):
+
+        self.app = app_interface
+        self.window = window
+        self.top = Toplevel(self.window, takefocus=True)
+
+        # self.window.withdraw()
+        # self.window.deiconify()
+        self.top.geometry("478x302")
+        self.top.title("Add playlist")
+        # self.top.transient(self.window)
+        # self.window.deiconify()
+        # self.window.transient(self.top)
+        self.background_canvas = Canvas(
+            self.top,
+            bg="black",
+            height=302,
+            width=478,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge")
+        self.background_canvas.place(x=0, y=0)
+
+        self.img_cancel = PhotoImage(
+            file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/cancel_playlist.png")
+        self.but_cancel = Button(self.top,
+                                 image=self.img_cancel,
+                                 bd=0,
+                                 borderwidth=0,
+                                 highlightthickness=0,
+                                 activebackground="black",
+                                 bg="black",
+                                 command=self.btn_cancel_clicked,
+                                 relief='flat')
+        self.but_cancel_window = self.background_canvas.create_window(127, 186, window=self.but_cancel, anchor='nw')
+
+        self.entry_delete_playlist = Entry_Box(self.top, self.background_canvas, 61, 122, 355, 47,
+                                            "/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/Resore_Mail.png",
+                                            5, "#3c3838")
+        self.entry_delete_playlist.background_canvas_image()
+        self.entry_delete_playlist.Place()
+
+        self.img_delete = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/app/image/delete.png")
+        self.but_delete = Button(self.top,
+                              image=self.img_delete,
+                              bd=0,
+                              activebackground="black",
+                              bg="black",
+                              borderwidth=0,
+                              highlightthickness=0,
+                              relief='flat',
+                              command=self.btn_delete_clicked)
+        self.but_delete_window = self.background_canvas.create_window(280, 186, window=self.but_delete,
+                                                                   anchor='nw')
+
+        self.add_playlist_label = self.background_canvas.create_text(23, 17,
+                                                                     anchor='nw',
+                                                                     text="Delete playlist",
+                                                                     font=font.Font(family='Ubuntu-Regular',
+                                                                                    size=28), fill="white")
+
+        self.playlist_name_label = self.background_canvas.create_text(59, 103,
+                                                                      anchor='nw',
+                                                                      text="Playlist Name",
+                                                                      font=font.Font(
+                                                                          family='Ubuntu-Regular',
+                                                                          size=10,
+                                                                          weight='bold',
+                                                                          slant='italic'),
+                                                                      fill="#3c3838")
+
+        self.message_label = self.background_canvas.create_text(111, 73,
+                                                                anchor='nw',
+                                                                text="",
+                                                                font=font.Font(
+                                                                    family='Ubuntu-Regular',
+                                                                    size=10,
+                                                                    weight='bold',
+                                                                    slant='italic'),
+                                                                fill="white")
+
+    def btn_delete_clicked(self):
+        name_playlist = str(self.entry_delete_playlist.get())
+        if name_playlist in self.app.playlist:
+            #playlist_index = self.app.playlist.index(name_playlist)
+            #self.app.playlist.pop(playlist_index)
+            playlist_id = int(self.app.conn.execute_get("""SELECT id FROM playlist WHERE user_id=(%s) and playlist_name=(%s) """,(self.app.user_id, name_playlist))[0][0])
+            playlist_content_in_ID = int(self.app.conn.execute_get("""SELECT count(*) FROM playlist_content where playlist_id=(%s) """,(playlist_id,))[0][0])
+            if playlist_content_in_ID == 0:
+                self.app.conn.execute_update("""DELETE FROM playlist WHERE id=(%s)""",(playlist_id,))
+            else:
+                self.app.conn.execute_update("""DELETE FROM playlist_content where playlist_id=(%s)""",(playlist_id,))
+                self.app.conn.execute_update("""DELETE FROM playlist WHERE id=(%s)""",(playlist_id,))
+
+            check_delete = int(self.app.conn.execute_get("""SELECT count(*) FROM playlist WHERE id=(%s)""",(playlist_id,))[0][0])
+
+
+            for button_playlist in self.app.left.playlist_menu.button_identities:
+                if button_playlist['text'] == name_playlist:
+                    index = self.app.left.playlist_menu.button_identities.index(button_playlist)
+                    button_playlist.destroy()
+
+            self.app.left.playlist_menu.button_identities.pop(index)
+            if name_playlist in self.app.playlist:
+                index = self.app.playlist.index(name_playlist)
+                self.app.playlist.pop(index)
+
+
+
+
+
+            if check_delete == 0:
+                self.background_canvas.itemconfig(self.message_label, text='Deleted Complete')
+
+        else:
+            self.background_canvas.itemconfig(self.message_label, text='This playlist not exsist')
+
+    def btn_cancel_clicked(self):
+        self.top.destroy()
 
 class Playlist_Menu():
     def __init__(self, frame, canvas, app_interface=None):
@@ -68,8 +302,39 @@ class Playlist_Menu():
             width=30,
             height=30)
 
+
+        self.img_delete_playlist = PhotoImage(file=f'/home/mateusz/PycharmProjects/TkinterProj/inz/app/image/bin5.png')
+        self.btn_delete_playlist = Button(
+            image=self.img_delete_playlist,
+            activebackground='black',
+            bg='black',
+            highlightbackground='black',
+            bd=0,
+            relief="groove",
+            command=self.btn_delete_playlist_clicked)
+        self.btn_delete_playlist.place(
+            x=180, y=405,
+             width = 30,
+            height = 30)
+
+
+
+        # self.btn_allMusic = Button(
+        #     text="ALL Music" + 20 * " ",
+        #     compound='right',
+        #     image=self.img_allMusic,
+        #     activebackground="green",
+        #     bg="black",
+        #     fg='white',
+        #     highlightbackground='black',
+        #     bd=0,
+        #     command=self.btn_all_music_clicked,
+        #     relief="groove")
+
         self.render_playlist_button()
 
+    def btn_delete_playlist_clicked(self):
+        Delete_Playlist(self.window, self.app)
 
     def render_playlist_button(self):
         for item in self.app.playlist:
@@ -79,6 +344,10 @@ class Playlist_Menu():
         print('btn nickname clicked')
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
+
+
+
+
 
     def btn_add_playlist_clicked(self):
         self.top = Toplevel(self.window, takefocus=True)
@@ -607,8 +876,8 @@ class Left_menu():
 
     def btn_nickname_clicked(self):
         # content
-        self.app.content.__del__()
-        self.app.setting.__init__(self.app.contentframe, self.app)
+        #self.app.content.__del__()
+        Setting_menu(self.app.contentframe, self.app)
         print('btn nickname clicked')
         # content.__del__()
         # Setting_menu(contentframe, contentframe_canvas)
@@ -695,9 +964,11 @@ class Play_menu():
         self.img_music = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/msuic.png")
         self.music_window = self.canvas.create_image(23, 18, anchor='nw', image=self.img_music)
-        self.text_labelmusic = self.canvas.create_text(122, 18, anchor='nw', text='', fill='white',
-                                                       font=font.Font(family='Ubuntu-Regular',
-                                                                      size=14))
+        # self.text_labelmusic = self.canvas.create_text(122, 18, anchor='nw', text='', fill='white',
+        #                                                font=font.Font(family='Ubuntu-Regular',
+        #                                                               size=14))
+        self.text_labelmusic  = Label(text='', fg='white',bg=self.canvas['bg'],font=font.Font(family='Ubuntu-Regular',size=14))
+        self.text_labelmusic_window = self.canvas.create_window(122,8, anchor='nw', window = self.text_labelmusic)
 
         """
         self.img_play_once =PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/playmenu/play_once.png")
@@ -816,7 +1087,7 @@ class Play_menu():
     #     self.canvas.
 
     def btn_add_to_playlist_clicked(self):
-        pass
+        Add_To_Playlist(self.window, self.app)
     def btn_clicked(self):
         print('clicked button')
 
@@ -1215,7 +1486,8 @@ class Content_menu():
         self.bname = self.app.button_identities_content_play[n]
         print(type(self.bname))
         button_name = self.bname['text']
-        self.app.play_menu.canvas.itemconfig(self.app.play_menu.text_labelmusic, text=button_name)
+        #self.app.play_menu.canvas.itemconfig(self.app.play_menu.text_labelmusic, text=button_name)
+        self.app.play_menu.text_labelmusic.configure(text=button_name)
 
         if self.app.actual_playing == self.bname and self.pause==False:
             self.bname.configure(image=self.img_track_play)
@@ -1307,8 +1579,9 @@ class Content_menu():
         # self.__del__()
         # app.content.content_search.__del__()
         # app.content.content_play.__del__()
-        self.app.content.__del__()
-        self.app.setting.__init__(self.app.contentframe, self.app)
+        #self.app.content.__del__()
+        #self.app.setting.__init__(self.app.contentframe, self.app)
+        Setting_menu(self.app.contentframe, self.app)
 
     def entry_search_focus(self, event):
         keyword = str(self.entry_search.get())
@@ -1340,12 +1613,20 @@ class Content_menu():
 
 class Setting_menu():
     def __init__(self, frame, app_interface=None):
+
+
         self.app = app_interface
-        self.window = frame
+        self.top = Toplevel()
+        self.top.geometry("1152x912")
+        self.top.resizable(False,False)
+        self.top.title("Setting menu")
+
+        self.app = app_interface
+
         # self.canvas = canvas
         self.password_visibility = False
         self.canvas = Canvas(
-            self.window,
+            self.top,
             bg="#0F0F0E",
             height=912,
             width=1157 - 15,
@@ -1358,7 +1639,7 @@ class Setting_menu():
 
         # Other sposob Create
         self.vertibar = Scrollbar(
-            self.window,
+            self.top,
             bd=0,
             troughcolor=self.canvas['bg'],
             bg="#3C3838",
@@ -1393,7 +1674,7 @@ class Setting_menu():
 
         self.img_proffile = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/setting_account_image.png")
-        self.but_profile = Button(self.window,
+        self.but_profile = Button(self.top,
                                   image=self.img_proffile,
                                   bd=0,
                                   borderwidth=0,
@@ -1404,7 +1685,7 @@ class Setting_menu():
                                   relief='flat')
         self.but_proffile_window = self.canvas.create_window(145, 193, window=self.but_profile, anchor='nw')
 
-        self.but_change_avatar = Button(self.window,
+        self.but_change_avatar = Button(self.top,
                                         text="Change",
                                         font=('Ubuntu-Regular', 9, 'underline'),
                                         bd=0,
@@ -1419,7 +1700,8 @@ class Setting_menu():
 
         self.img_back = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/back_white_img.png")
-        self.but_back = Button(self.window,
+        """
+        self.but_back = Button(self.top,
                                image=self.img_back,
                                bd=0,
                                borderwidth=0,
@@ -1429,6 +1711,7 @@ class Setting_menu():
                                command=self.btn_back_clicked,
                                relief='flat')
         self.but_setting_window = self.canvas.create_window(0, 30, window=self.but_back, anchor='nw')
+        """
 
         self.your_nickname_label = self.canvas.create_text(275, 212,
                                                            anchor='nw',
@@ -1463,7 +1746,7 @@ class Setting_menu():
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/describe_rectangle.png")
         self.describe_image = self.canvas.create_image(145, 456, image=self.img_describe, anchor='nw')
 
-        self.text_describeBox = Text(self.window,
+        self.text_describeBox = Text(self.top,
                                      bg='#C4C4C4',
                                      bd=0,
                                      fg='black',
@@ -1485,7 +1768,7 @@ class Setting_menu():
                                                                  window=self.text_describeBox)
 
         self.img_edit = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/edit_setting.png")
-        self.but_edit = Button(self.window,
+        self.but_edit = Button(self.top,
                                image=self.img_edit,
                                bd=0,
                                borderwidth=0,
@@ -1497,7 +1780,7 @@ class Setting_menu():
         self.but_edit_window = self.canvas.create_window(785, 647, window=self.but_edit, anchor='nw')
 
         self.img_save = PhotoImage(file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/save_setting.png")
-        self.but_save = Button(self.window,
+        self.but_save = Button(self.top,
                                image=self.img_save,
                                bd=0,
                                borderwidth=0,
@@ -1513,7 +1796,7 @@ class Setting_menu():
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/close_eye.png")
         self.img_unshow_password = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/main_menu/open_eye.png")
-        self.but_show_password = Button(self.window,
+        self.but_show_password = Button(self.top,
                                         image=self.img_show_password,
                                         borderwidth=0,
                                         highlightthickness=0,
@@ -1544,7 +1827,7 @@ class Setting_menu():
                                                                       slant='roman'),
                                                                   fill="#3C3838")
 
-        self.entry_old_password = Entry_Box(self.window, self.canvas, 145, 845, 445, 59,
+        self.entry_old_password = Entry_Box(self.top, self.canvas, 145, 845, 445, 59,
                                             "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
                                             5, "#3C3838")
         self.entry_old_password.background_canvas_image()
@@ -1561,7 +1844,7 @@ class Setting_menu():
                                                                       slant='roman'),
                                                                   fill="#3C3838")
 
-        self.entry_new_password = Entry_Box(self.window, self.canvas, 145, 951, 445, 59,
+        self.entry_new_password = Entry_Box(self.top, self.canvas, 145, 951, 445, 59,
                                             "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
                                             5, "#3C3838")
         self.entry_new_password.background_canvas_image()
@@ -1578,7 +1861,7 @@ class Setting_menu():
                                                                       slant='roman'),
                                                                   fill="#3C3838")
 
-        self.entry_retype_password = Entry_Box(self.window, self.canvas, 145, 1058, 445, 59,
+        self.entry_retype_password = Entry_Box(self.top, self.canvas, 145, 1058, 445, 59,
                                                "/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/entryBox_setting.png",
                                                5, "#3C3838")
         self.entry_retype_password.background_canvas_image()
@@ -1587,7 +1870,7 @@ class Setting_menu():
 
         self.img_change = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/change_setting.png")
-        self.but_change = Button(self.window,
+        self.but_change = Button(self.top,
                                  image=self.img_change,
                                  bd=0,
                                  borderwidth=0,
@@ -1732,7 +2015,7 @@ class Setting_menu():
         vars = description, self.app.nick
         self.app.conn.execute_update(sql, vars)
         print(description.index)
-
+    """
     def btn_back_clicked(self):
         self.__del__()
         # Content_menu(self.window,self.canvas,self.app)
@@ -1740,6 +2023,7 @@ class Setting_menu():
         # tu wczesniej bylo to wyzej
         self.app.content.__init__(self.window, self.app)
         #self.app.content.render_bac(self.app.button_identities_content_play)
+    """
 
     def select_file(self):
         filetypes = (
@@ -1834,8 +2118,8 @@ class App_Interface():
         # self.contentframe_canvas.grid(row=0,column=0)
         self.content = Content_menu(self.contentframe, self)
 
-        self.setting = Setting_menu(self.contentframe, self)
-        self.setting.__del__()
+        #self.setting = Setting_menu(self.contentframe, self)
+        #self.setting.__del__()
 
     def user_update(self):
         if self.mail == None:
