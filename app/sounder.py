@@ -2,6 +2,13 @@ from tkinter import *
 from login_window import *
 from app import *
 
+
+def on_closing():
+    if app.content.p.is_alive():
+        app.content.p.terminate()
+        app.content.p.join()
+        root.destroy()
+
 if __name__ == "__main__":
     window = Tk()
     window.geometry("800x400")
@@ -33,4 +40,5 @@ if __name__ == "__main__":
         # app.nick = app_login.nick
         # app.mail = app_login.mail
 
+        root.protocol("WM_DELETE_WINDOW", on_closing)
         root.mainloop()

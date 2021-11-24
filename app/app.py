@@ -17,6 +17,7 @@ import socket
 import threading, wave, pyaudio, time, queue, os
 import sys
 import multiprocessing
+import signal
 
 class Add_To_Playlist():
     def __init__(self, window, app_interface):
@@ -98,7 +99,7 @@ class Add_To_Playlist():
 
     def get_track_path(self, track_name):
         if int(self.app.conn.execute_get("""SELECT count(*) FROM my_music WHERE user_id=(%s) and track_name=(%s)""", (self.app.user_id, track_name))[0][0]) == 1:
-            my = str(self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE user_id=(%s) and track_name=(%s)""", (self.app.user_id, track_name)[0][0]))
+            my = str(self.app.conn.execute_get("""SELECT track_path FROM my_music WHERE user_id=(%s) and track_name=(%s)""", (self.app.user_id, track_name))[0][0])
             return my
         elif int(self.app.conn.execute_get("""SELECT count(*) FROM my_sharing WHERE tenant=(%s) and track_name=(%s)""", (self.app.nick, track_name))[0][0]) == 1:
             share = str(self.app.conn.execute_get("""SELECT track_path FROM my_sharing WHERE tenant=(%s) and track_name=(%s)""", (self.app.nick, track_name))[0][0])
@@ -122,7 +123,7 @@ class Add_To_Playlist():
                 #     return
                 # else:
                 self.app.conn.execute_update("""INSERT INTO playlist_content (playlist_id, track_name, track_path) VALUES( %s, %s, %s) """, (playlist_id, track_name,track_path ))
-
+                self.background_canvas.itemconfig(self.message_label, text='Added complete, Refresh menu')
             else:
                 self.background_canvas.itemconfig(self.message_label, text='This track exist in this playlist')
         else:
@@ -496,6 +497,7 @@ class Playlist_Menu():
                 self.playlist_content.append(str(item[2]))
         self.app.content.content_play_canvas.delete('all')
         self.app.content.last_postion = 0
+        self.app.button_identities_content_play.clear()
         self.app.content.render_button(self.playlist_content)
 
     def create_playlist_button(self, button_name):
@@ -893,6 +895,7 @@ class Left_menu():
                 self.app.all_music.append(str(item[0]))
         self.app.content.content_play_canvas.delete('all')
         self.app.content.last_postion = 0
+        self.app.button_identities_content_play.clear()
         self.app.content.render_button(self.app.all_music)
         # tutja to sie zobaczy czy to tak bedzie dzialac
         # self.app.last_render = self.app.content.render_button(self.app.all_music)
@@ -907,6 +910,7 @@ class Left_menu():
         # print(self.app.my_music)
         self.app.content.content_play_canvas.delete('all')
         self.app.content.last_postion = 0
+        self.app.button_identities_content_play.clear()
         self.app.content.render_button(self.app.my_music)
         # self.app.last_render = self.app.content.render_button(self.app.my_music)
 
@@ -921,6 +925,7 @@ class Left_menu():
 
         self.app.content.content_play_canvas.delete('all')
         self.app.content.last_postion = 0
+        self.app.button_identities_content_play.clear()
         self.app.content.render_button(self.app.my_sharing)
         self.app.last = self.app.content.render_button(self.app.my_sharing)
 
@@ -933,6 +938,7 @@ class Left_menu():
                 self.app.sharing_me.append(str(item[0]))
         self.app.content.content_play_canvas.delete('all')
         self.app.content.last_postion = 0
+        self.app.button_identities_content_play.clear()
         self.app.content.render_button(self.app.sharing_me)
         # self.app.last_render = self.app.content.render_button(self.app.sharing_me)
 
@@ -945,6 +951,7 @@ class Left_menu():
                 self.app.favourite.append(str(item[0]))
         self.app.content.content_play_canvas.delete('all')
         self.app.content.last_postion = 0
+        self.app.button_identities_content_play.clear()
         self.app.content.render_button(self.app.favourite)
         # self.app.last_render = self.app.content.render_button(self.app.favourite)
 
@@ -1129,6 +1136,7 @@ class Play_menu():
             self.app.content.btn_press(n - 1)
 
     def btn_next_clicked(self):
+        #os.kill(self.app.content.p.pid, signal.SIGTERM)
         self.app.content.btn_stop_clicked()
         length = len(self.app.button_identities_content_play)
         n = self.app.button_identities_content_play.index(self.app.actual_playing)
@@ -1356,26 +1364,26 @@ class Content_menu():
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/pause_label.png")
         self.img_track_play = PhotoImage(
             file=f"/home/mateusz/PycharmProjects/TkinterProj/inz/App_interface/play_label.png")
-        self.btn_track_play = Button(self.window,
-                                     text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
-                                     compound='left',
-                                     image=self.img_track_play,
-                                     activebackground="green",
-                                     bg=self.content_play_canvas['bg'],
-                                     fg='white',
-                                     highlightbackground='black',
-                                     bd=0,
-                                     command=self.thread,
-                                     anchor="w",
-                                     relief="groove")
+        # self.btn_track_play = Button(self.window,
+        #                              text="Chłopcy z Placu Broni - Kocham wolność - YouTube.mp3",
+        #                              compound='left',
+        #                              image=self.img_track_play,
+        #                              activebackground="green",
+        #                              bg=self.content_play_canvas['bg'],
+        #                              fg='white',
+        #                              highlightbackground='black',
+        #                              bd=0,
+        #                              command=self.thread,
+        #                              anchor="w",
+        #                              relief="groove")
+        #
+        # self.btn_track_play_window = self.content_play_canvas.create_window(0, 0, window=self.btn_track_play,
+        #                                                                     anchor='nw',
+        #                                                                     width=1157 - int(self.vertibar['width']),
+        #                                                                     height=38)
 
-        self.btn_track_play_window = self.content_play_canvas.create_window(0, 0, window=self.btn_track_play,
-                                                                            anchor='nw',
-                                                                            width=1157 - int(self.vertibar['width']),
-                                                                            height=38)
-
-        self.btn_stop = Button(self.window, image=self.img_track_pause, command=self.btn_stop_clicked)
-        self.content_play_canvas.create_window(40, 400, anchor='nw', window=self.btn_stop)
+        # self.btn_stop = Button(self.window, image=self.img_track_pause, command=self.btn_stop_clicked)
+        # self.content_play_canvas.create_window(40, 400, anchor='nw', window=self.btn_stop)
         print(len(self.app.button_identities_content_play))
         if len(self.app.button_identities_content_play) > 0:
             print(type(self.app.button_identities_content_play[0]))
@@ -1387,10 +1395,13 @@ class Content_menu():
     def btn_stop_clicked(self):
         # print('Content_paly pressed button')
         # self.btn_track_play.configure(image=self.img_track_pause)
-        if isinstance(self.p, multiprocessing.Process):
+
+        if isinstance(self.app.content.p, multiprocessing.Process):
             self.p.terminate()
             self.p.join()
             self.ClientSocket = socket.socket()
+
+
 
     def btn_pause_clicked(self):
         if isinstance(self.p, multiprocessing.Process):
@@ -1401,6 +1412,25 @@ class Content_menu():
 
     ############################################33
     ##################NEW PROCESS############################
+    def play_next(self):
+        length = len(self.app.button_identities_content_play)
+        n = self.app.button_identities_content_play.index(self.app.actual_playing)
+        if n == length - 1:
+            self.app.content.btn_press(0)
+        else:
+            self.app.content.btn_press(n + 1)
+
+    # def next(self):
+    #     for but_item in self.app.button_identities_content_play:
+    #         if but_item['text'] == self.app.actual_playing:
+    #             index = self.app.button_identities_content_play.index(but_item)
+    #
+    #     lenght = len(self.app.button_identities_content_play)
+    #     if index == lenght -1:
+    #         next_index = 0
+    #     else:
+    #         next_index = index +1
+
 
     def audio_stream_UDP(self, message):
         BUFF_SIZE = 65536
@@ -1447,15 +1477,18 @@ class Content_menu():
             #print(len(frame))
             #print(q.qsize())
             #print(frame)
-            if frame == b'ENDS':
+            if frame == b'END':
                 print('wiewior')
 
                 break
 
-        #self.ClientSocket.close()
+
+        #self.play_next()
+        self.ClientSocket.close()
         print('Audio closed')
+        #self.app.play_menu.btn_next_clicked()
         #os._exit(0)
-        self.app.play_menu.btn_next_clicked()
+
 
     ###################################################
 
@@ -1467,7 +1500,7 @@ class Content_menu():
         # exec(open('client2.py').read())
 
     def thread(self):
-        self.btn_track_play.configure(image=self.img_track_pause)
+        #self.btn_track_play.configure(image=self.img_track_pause)
 
         # self.tt =Thread(target=self.play).start()
         # time.sleep(0.5)
@@ -1478,6 +1511,10 @@ class Content_menu():
         self.p = multiprocessing.Process(target=self.audio_stream_UDP, args=(self.track_play,))
         # self.p = multiprocessing.Process(target=self.play_local)
         self.p.start()
+
+
+
+
         # Normalnie processing mozna stad odpalic
 
     ##################################################3
@@ -1544,6 +1581,7 @@ class Content_menu():
         # TUTAJ NALEZY WYWOLAC PLAY STRAMING funkcje
 
     def create_button(self, button_name):
+
         self.temp_button = Button(self.window,
                                   text=button_name,
                                   activebackground="green",
